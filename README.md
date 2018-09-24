@@ -1,4 +1,4 @@
-# GrowtopiaServer
+# Growtopia Server
 First Growtopia Private Server made with ENet.
 
 This project has been compiled with Visual Studio 2015 (Visual Studio 2013 or older won't work!) and newer versions of VS or other compilers weren't been tested.
