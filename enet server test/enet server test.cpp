@@ -2419,6 +2419,16 @@ int _tmain(int argc, _TCHAR* argv[])
 						delete p.data;
 						//enet_host_flush(server);
 					}
+					else if (str.substr(0,9) == "/weather ") {
+						int weatherID = atoi(str.substr(9, cch.length() - 9 - 1).c_str());
+						GamePacket p2 = packetEnd(appendInt(appendString(createPacket(), "OnSetBaseWeather"), weatherID));
+						ENetPacket * packet2 = enet_packet_create(p2.data,
+							p2.len,
+							ENET_PACKET_FLAG_RELIABLE);
+						enet_peer_send(peer, 0, packet2);
+						delete p2.data;
+						cout << "[debug] Changing weather to " + std::to_string(weatherID) << endl;
+					}
 					else if (str == "/count"){
 						int count = 0;
 						ENetPeer * currentPeer;
