@@ -3038,7 +3038,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else if (e == 3) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
-								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Press Back if you want to quit the game."));
+								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Exit from what? Click back if you're done playing."));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
 									ENET_PACKET_FLAG_RELIABLE);
