@@ -622,7 +622,7 @@ int PlayerDB::playerLogin(ENetPeer* peer, string username, string password) {
 				if (((PlayerInfo*)(currentPeer->data))->rawName == PlayerDB::getProperName(username))
 				{
 					{
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Someone else logged to this account!"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Someone else logged into this account!"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
@@ -630,7 +630,7 @@ int PlayerDB::playerLogin(ENetPeer* peer, string username, string password) {
 						delete p.data;
 					}
 					{
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Someone else was logged to this account! He was kicked out now."));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Someone else was logged into this account! He was kicked out now."));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
@@ -984,7 +984,7 @@ void craftItemDescriptions() {
 			{
 				itemDefs.at(atoi(ex[0].c_str())).description = ex[1];
 				if (!(atoi(ex[0].c_str()) % 2))
-					itemDefs.at(atoi(ex[0].c_str()) + 1).description = "This is tree.";
+					itemDefs.at(atoi(ex[0].c_str()) + 1).description = "This is a tree.";
 			}
 		}
 	}
@@ -1674,7 +1674,7 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 				name = ((PlayerInfo*)(currentPeer->data))->displayName;
 
 		}
-		GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`o<" + name + "`o> " + message));
+		GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`o<`w" + name + "`o> " + message));
 		GamePacket p2 = packetEnd(appendIntx(appendString(appendIntx(appendString(createPacket(), "OnTalkBubble"), netID), message), 0));
 		for (currentPeer = server->peers;
 			currentPeer < &server->peers[server->peerCount];
@@ -1732,7 +1732,7 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 	void sendWorld(ENetPeer* peer, WorldInfo* worldInfo)
 	{
 #ifdef TOTAL_LOG
-		cout << "Entering some world..." << endl;
+		cout << "Entering a world..." << endl;
 #endif
 		((PlayerInfo*)(peer->data))->joinClothesUpdated = false;
 		string asdf = "0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000070000000000"; // 0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000080000000000000000000000000000000000000000000000000000000000000048133A0500000000BEBB0000070000000000
@@ -1949,7 +1949,7 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 			worldOffers += worlds[0].name;
 		}
 		
-		worldOffers += "\nadd_button|Showing: `wBest Worlds``|_catselect_|0.6|3529161471|\n";
+		worldOffers += "\nadd_button|Showing: `wWorlds``|_catselect_|0.6|3529161471|\n";
 		for (int i = 0; i < worlds.size(); i++) {
 			worldOffers += "add_floater|"+worlds[i].name+"|"+std::to_string(getPlayersCountInWorld(worlds[i].name))+"|0.55|3529161471\n";
 		}
@@ -2021,11 +2021,11 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if (file.read((char*)(itemsDat + 60), itemsDatSize))
 		{
-			cout << "Updating items data suecess!" << endl;
+			cout << "Updating item data success!" << endl;
 
 		}
 		else {
-			cout << "Updating items data failed!" << endl;
+			cout << "Updating item data failed!" << endl;
 		}
 	}
 	
@@ -2091,7 +2091,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			event.peer->data = new PlayerInfo;
 			if (count > 3)
 			{
-				GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rToo much accounts are logged on from this IP. If you don't think so, then please let server relax and connect again in half minute or so.``"));
+				GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rToo many accounts are logged on from this IP. Log off one account before playing please.``"));
 				ENetPacket * packet = enet_packet_create(p.data,
 					p.len,
 					ENET_PACKET_FLAG_RELIABLE);
@@ -2323,7 +2323,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 						int regState = PlayerDB::playerRegister(username, password);
 						if (regState == 1) {
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rYour account was created!``"));
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rYour account has been created!``"));
 							ENetPacket * packet = enet_packet_create(p.data,
 								p.len,
 								ENET_PACKET_FLAG_RELIABLE);
@@ -2340,7 +2340,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							enet_peer_disconnect_later(peer, 0);
 						}
 						else if(regState==-1) {
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rCreation of account failed, because it already exists!``"));
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rAccount creation has failed, because it already exists!``"));
 							ENetPacket * packet = enet_packet_create(p.data,
 								p.len,
 								ENET_PACKET_FLAG_RELIABLE);
@@ -2348,7 +2348,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							delete p.data;
 						}
 						else if (regState == -2) {
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rCreation of account failed, because name is too short!``"));
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rAccount creation has failed, because the name is too short!``"));
 							ENetPacket * packet = enet_packet_create(p.data,
 								p.len,
 								ENET_PACKET_FLAG_RELIABLE);
@@ -2411,7 +2411,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						SendPacketRaw(4, packPlayerMoving(&data), 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
 					}
 					else if (str == "/help"){
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supporteds comands are: /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
@@ -2431,7 +2431,7 @@ int _tmain(int argc, _TCHAR* argv[])
 								continue;
 							count++;
 						}
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "There is "+std::to_string(count)+" people out of 1024 limit."));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "There are "+std::to_string(count)+" people online out of 1024 limit."));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
@@ -2441,7 +2441,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					}
 					else if (str.substr(0, 5) == "/asb "){
 						if (!canSB(((PlayerInfo*)(peer->data))->rawName, ((PlayerInfo*)(peer->data))->tankIDPass)) continue;
-						cout << "ASB from " << ((PlayerInfo*)(peer->data))->rawName <<  "in world " << ((PlayerInfo*)(peer->data))->currentWorld << "with IP " << std::hex << peer->address.host << std::dec << " with message " << str.substr(5, cch.length() - 5 - 1) << endl;
+						cout << "ASB from " << ((PlayerInfo*)(peer->data))->rawName <<  " in world " << ((PlayerInfo*)(peer->data))->currentWorld << "with IP " << std::hex << peer->address.host << std::dec << " with message " << str.substr(5, cch.length() - 5 - 1) << endl;
 						GamePacket p = packetEnd(appendInt(appendString(appendString(appendString(appendString(createPacket(), "OnAddNotification"), "interface/atomic_button.rttex"), str.substr(4, cch.length() - 4 - 1).c_str()), "audio/hub_open.wav"), 0));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
@@ -2466,7 +2466,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							((PlayerInfo*)(peer->data))->lastSB = (duration_cast<milliseconds>(system_clock::now().time_since_epoch())).count();
 						}
 						else {
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You are spamming sb too fast, calm down."));
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Wait a minute before using the SB command again!"));
 							ENetPacket * packet = enet_packet_create(p.data,
 								p.len,
 								ENET_PACKET_FLAG_RELIABLE);
@@ -2519,10 +2519,10 @@ int _tmain(int argc, _TCHAR* argv[])
 					else if (str.substr(0, 6) == "/radio") {
 						GamePacket p;
 						if (((PlayerInfo*)(peer->data))->radio) {
-							p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You now won't recieve broadcast anymore."));
+							p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You won't see broadcasts anymore."));
 							((PlayerInfo*)(peer->data))->radio = false;
 						} else {
-							p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You will now recieve broadcasts again."));
+							p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You will now see broadcasts again."));
 							((PlayerInfo*)(peer->data))->radio = true;
 						}
 
@@ -2788,7 +2788,7 @@ int _tmain(int argc, _TCHAR* argv[])
 #ifdef REGISTRATION
 						int logStatus = PlayerDB::playerLogin(peer, ((PlayerInfo*)(event.peer->data))->rawName, ((PlayerInfo*)(event.peer->data))->tankIDPass);
 						if (logStatus == 1) {
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rYou has successfully logged to your account!``"));
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rYou have successfully logged into your account!``"));
 							ENetPacket * packet = enet_packet_create(p.data,
 								p.len,
 								ENET_PACKET_FLAG_RELIABLE);
@@ -2808,7 +2808,7 @@ int _tmain(int argc, _TCHAR* argv[])
 #else
 						
 						((PlayerInfo*)(event.peer->data))->displayName = PlayerDB::fixColors(((PlayerInfo*)(event.peer->data))->tankIDName.substr(0, ((PlayerInfo*)(event.peer->data))->tankIDName.length()>18 ? 18 : ((PlayerInfo*)(event.peer->data))->tankIDName.length()));
-						if (((PlayerInfo*)(event.peer->data))->displayName.length() < 3) ((PlayerInfo*)(event.peer->data))->displayName = "Person that don't know how name looks!";
+						if (((PlayerInfo*)(event.peer->data))->displayName.length() < 3) ((PlayerInfo*)(event.peer->data))->displayName = "Person that doesn't know how the name looks!";
 #endif
 					}
 					for (char c : ((PlayerInfo*)(event.peer->data))->displayName) if (c < 0x20 || c>0x7A) ((PlayerInfo*)(event.peer->data))->displayName = "Bad characters in name, remove them!";
@@ -2854,7 +2854,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
 							continue;
 
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Player `o" + ((PlayerInfo*)(event.peer->data))->tankIDName + "`o just entered game..."));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Player `o" + ((PlayerInfo*)(event.peer->data))->tankIDName + "`o just entered the game..."));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
@@ -2864,7 +2864,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						delete p.data;
 					}*/
 					sendWorldOffers(peer);
-					GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Server made by Growtopia Noobs, hosted by FakeHax and items from Nenkai."));
+					GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Server made by Growtopia Noobs, some fixes by iProgramInCpp and items from Nenkai."));
 					ENetPacket * packet = enet_packet_create(p.data,
 						p.len,
 						ENET_PACKET_FLAG_RELIABLE);
@@ -2884,7 +2884,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 					{
 						//GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnDialogRequest"), "set_default_color|`o\n\nadd_label_with_icon|big|`wThe Growtopia Gazette``|left|5016|\n\nadd_spacer|small|\n\nadd_image_button|banner|interface/large/news_banner.rttex|noflags|||\n\nadd_spacer|small|\n\nadd_textbox|`wSeptember 10:`` `5Surgery Stars end!``|left|\n\nadd_spacer|small|\n\n\n\nadd_textbox|Hello Growtopians,|left|\n\nadd_spacer|small|\n\n\n\nadd_textbox|Surgery Stars is over! We hope you enjoyed it and claimed all your well-earned Summer Tokens!|left|\n\nadd_spacer|small|\n\nadd_spacer|small|\n\nadd_textbox|As we announced earlier, this month we are releasing the feature update a bit later, as we're working on something really cool for the monthly update and we're convinced that the wait will be worth it!|left|\n\nadd_spacer|small|\n\nadd_textbox|Check the Forum here for more information!|left|\n\nadd_spacer|small|\n\nadd_url_button|comment|`wSeptember Updates Delay``|noflags|https://www.growtopiagame.com/forums/showthread.php?510657-September-Update-Delay&p=3747656|Open September Update Delay Announcement?|0|0|\n\nadd_spacer|small|\n\nadd_spacer|small|\n\nadd_textbox|Also, we're glad to invite you to take part in our official Growtopia survey!|left|\n\nadd_spacer|small|\n\nadd_url_button|comment|`wTake Survey!``|noflags|https://ubisoft.ca1.qualtrics.com/jfe/form/SV_1UrCEhjMO7TKXpr?GID=26674|Open the browser to take the survey?|0|0|\n\nadd_spacer|small|\n\nadd_textbox|Click on the button above and complete the survey to contribute your opinion to the game and make Growtopia even better! Thanks in advance for taking the time, we're looking forward to reading your feedback!|left|\n\nadd_spacer|small|\n\nadd_spacer|small|\n\nadd_textbox|And for those who missed PAW, we made a special video sneak peek from the latest PAW fashion show, check it out on our official YouTube channel! Yay!|left|\n\nadd_spacer|small|\n\nadd_url_button|comment|`wPAW 2018 Fashion Show``|noflags|https://www.youtube.com/watch?v=5i0IcqwD3MI&feature=youtu.be|Open the Growtopia YouTube channel for videos and tutorials?|0|0|\n\nadd_spacer|small|\n\nadd_textbox|Lastly, check out other September updates:|left|\n\nadd_spacer|small|\n\nadd_label_with_icon|small|IOTM: The Sorcerer's Tunic of Mystery|left|24|\n\nadd_label_with_icon|small|New Legendary Summer Clash Branch|left|24|\n\nadd_spacer|small|\n\nadd_textbox|`$- The Growtopia Team``|left|\n\nadd_spacer|small|\n\nadd_spacer|small|\n\n\n\n\n\nadd_url_button|comment|`wOfficial YouTube Channel``|noflags|https://www.youtube.com/c/GrowtopiaOfficial|Open the Growtopia YouTube channel for videos and tutorials?|0|0|\n\nadd_url_button|comment|`wSeptember's IOTM: `8Sorcerer's Tunic of Mystery!````|noflags|https://www.growtopiagame.com/forums/showthread.php?450065-Item-of-the-Month&p=3392991&viewfull=1#post3392991|Open the Growtopia website to see item of the month info?|0|0|\n\nadd_spacer|small|\n\nadd_label_with_icon|small|`4WARNING:`` `5Drop games/trust tests`` and betting games (like `5Casinos``) are not allowed and will result in a ban!|left|24|\n\nadd_label_with_icon|small|`4WARNING:`` Using any kind of `5hacked client``, `5spamming/text pasting``, or `5bots`` (even with an alt) will likely result in losing `5ALL`` your accounts. Seriously.|left|24|\n\nadd_label_with_icon|small|`4WARNING:`` `5NEVER enter your GT password on a website (fake moderator apps, free gemz, etc) - it doesn't work and you'll lose all your stuff!|left|24|\n\nadd_spacer|small|\n\nadd_url_button|comment|`wGrowtopia on Facebook``|noflags|http://growtopiagame.com/facebook|Open the Growtopia Facebook page in your browser?|0|0|\n\nadd_spacer|small|\n\nadd_button|rules|`wHelp - Rules - Privacy Policy``|noflags|0|0|\n\n\nadd_quick_exit|\n\nadd_spacer|small|\nadd_url_button|comment|`wVisit Growtopia Forums``|noflags|http://www.growtopiagame.com/forums|Visit the Growtopia forums?|0|0|\nadd_spacer|small|\nadd_url_button||`wWOTD: `1THELOSTGOLD`` by `#iWasToD````|NOFLAGS|OPENWORLD|THELOSTGOLD|0|0|\nadd_spacer|small|\nadd_url_button||`wVOTW: `1Yodeling Kid - Growtopia Animation``|NOFLAGS|https://www.youtube.com/watch?v=UMoGmnFvc58|Watch 'Yodeling Kid - Growtopia Animation' by HyerS on YouTube?|0|0|\nend_dialog|gazette||OK|"));
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnDialogRequest"), "set_default_color|`o\n\nadd_label_with_icon|big|`wThe Growtopia Gazette``|left|5016|\n\nadd_spacer|small|\nadd_label_with_icon|small|`4WARNING:`` `5Worlds (and accounts)`` might be deleted at any time if database issues appear (once per day or week).|left|4|\nadd_label_with_icon|small|`4WARNING:`` `5Accounts`` are in beta, bugs may appear and they will be probably deleted often, because of new accounts updates, which will cause database incompatibility.|left|4|\nadd_spacer|small|\n\nadd_url_button||``Watch: `1Watch newsest video about GT Private Server``|NOFLAGS|https://www.youtube.com/watch?v=_3avlDDYBBY|Open link?|0|0|\nadd_url_button||``Channel: `1Watch Growtopia Noobs channel``|NOFLAGS|https://www.youtube.com/channel/UCLXtuoBlrXFDRtFU8vPy35g|Open link?|0|0|\nadd_url_button||``Items: `1Items database by Nenkai``|NOFLAGS|https://raw.githubusercontent.com/Nenkai/GrowtopiaItemDatabase/master/GrowtopiaItemDatabase/CoreData.txt|Open link?|0|0|\nadd_url_button||``Discord: `1Community discord about GT Private Server``|NOFLAGS|https://discord.gg/8WUTs4v|Open link?|0|0|\nadd_quick_exit|\nadd_button|chc0|Close|noflags|0|0|\nnend_dialog|gazette||OK|"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnDialogRequest"), "set_default_color|`o\n\nadd_label_with_icon|big|`wThe Growtopia Gazette``|left|5016|\n\nadd_spacer|small|\nadd_label_with_icon|small|`4WARNING:`` `5Worlds (and accounts)`` might be deleted at any time if database issues appear (once per day or week).|left|4|\nadd_label_with_icon|small|`4WARNING:`` `5Accounts`` are in beta, bugs may appear and they will be probably deleted often, because of new account updates, which will cause database incompatibility.|left|4|\nadd_spacer|small|\n\nadd_url_button||``Watch: `1Watch a video about GT Private Server``|NOFLAGS|https://www.youtube.com/watch?v=_3avlDDYBBY|Open link?|0|0|\nadd_url_button||``Channel: `1Watch Growtopia Noobs' channel``|NOFLAGS|https://www.youtube.com/channel/UCLXtuoBlrXFDRtFU8vPy35g|Open link?|0|0|\nadd_url_button||``Items: `1Item database by Nenkai``|NOFLAGS|https://raw.githubusercontent.com/Nenkai/GrowtopiaItemDatabase/master/GrowtopiaItemDatabase/CoreData.txt|Open link?|0|0|\nadd_url_button||``Discord: `1GT Private Server Discord``|NOFLAGS|https://discord.gg/8WUTs4v|Open the link?|0|0|\nadd_quick_exit|\nadd_button|chc0|Close|noflags|0|0|\nnend_dialog|gazette||OK|"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
@@ -3018,7 +3018,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						catch (int e) {
 							if (e == 1) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
-								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You are in EXIT!"));
+								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You have exited the world."));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
 									ENET_PACKET_FLAG_RELIABLE);
@@ -3028,7 +3028,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else if (e == 2) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
-								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You have entered bad characters to world name!"));
+								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You have entered bad characters in the world name!"));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
 									ENET_PACKET_FLAG_RELIABLE);
@@ -3038,7 +3038,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else if (e == 3) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
-								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You can't go to EXIT!"));
+								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Exit from what? Click back if you're done playing."));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
 									ENET_PACKET_FLAG_RELIABLE);
@@ -3048,7 +3048,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
-								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Unknown error while entering world!"));
+								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "I know this menu is magical and all, but it has its limitations! You can't visit this world!"));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
 									ENET_PACKET_FLAG_RELIABLE);
@@ -3302,7 +3302,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
 					continue;
 
-				GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Player `o" + ((PlayerInfo*)(event.peer->data))->tankIDName + "`o just left game..."));
+				GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Player `o" + ((PlayerInfo*)(event.peer->data))->tankIDName + "`o just left the game..."));
 				ENetPacket * packet = enet_packet_create(p.data,
 					p.len,
 					ENET_PACKET_FLAG_RELIABLE);
