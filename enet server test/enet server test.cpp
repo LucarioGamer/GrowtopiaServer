@@ -553,7 +553,7 @@ public:
 	static string getProperName(string name);
 	static string PlayerDB::fixColors(string text);
 	static int playerLogin(ENetPeer* peer, string username, string password);
-	static int playerRegister(string username, string password, string passwordverify, string email);
+	static int playerRegister(string username, string password, string passwordverify, string email, string discord);
 };
 
 string PlayerDB::getProperName(string name) {
@@ -652,9 +652,11 @@ int PlayerDB::playerLogin(ENetPeer* peer, string username, string password) {
 	}
 }
 
-int PlayerDB::playerRegister(string username, string password, string passwordverify, string email) {
+int PlayerDB::playerRegister(string username, string password, string passwordverify, string email, string discord) {
     username = PlayerDB::getProperName(username);
-	if (passwordverify != password) return -3;
+    if (discord.find("#") == std::string::npos && discord.length() != 0) return -5;
+    if (email.find("@") == std::string::npos && email.length() != 0) return -4;
+    if (passwordverify != password) return -3;
     if (username.length() < 3) return -2;
     std::ifstream ifs("players/" + username + ".json");
     if (ifs.is_open()) {
@@ -670,6 +672,7 @@ int PlayerDB::playerRegister(string username, string password, string passwordve
 	j["username"] = username;
 	j["password"] = hashPassword(password);
 	j["email"] = email;
+	j["discord"] = discord;
 	j["adminLevel"] = 0;
 	o << j << std::endl;
 	return 1;
@@ -2269,12 +2272,11 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 #ifdef REGISTRATION
 						//GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnDialogRequest"), "set_default_color|`o\n\nadd_label_with_icon|big|`w" + itemDefs.at(id).name + "``|left|" + std::to_string(id) + "|\n\nadd_spacer|small|\nadd_textbox|" + itemDefs.at(id).description + "|left|\nadd_spacer|small|\nadd_quick_exit|\nadd_button|chc0|Close|noflags|0|0|\nnend_dialog|gazette||OK|"));
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnDialogRequest"), "set_default_color|`o\n\nadd_label_with_icon|big|`wGet a GrowID``|left|206|\n\nadd_spacer|small|\nadd_textbox|A `wGrowID `wmeans `oyou can use a name and password to logon from any device.|\nadd_spacer|small|\nadd_textbox|This `wname `owill be reserved for you and `wshown to other players`o, so choose carefully!|\nadd_text_input|username|GrowID||30|\nadd_text_input|password|Password||100|\nadd_text_input|passwordverify|Password Verify||100|\nadd_textbox|Your `wemail address `owill only be used for account verification purposes and won't be spammed or shared. If you use a fake email, you'll never be able to recover or change your password.|\nadd_text_input|email|Email||100|\nend_dialog|register|Cancel|Get My GrowID!|\n"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnDialogRequest"), "set_default_color|`o\n\nadd_label_with_icon|big|`wGet a GrowID``|left|206|\n\nadd_spacer|small|\nadd_textbox|A `wGrowID `wmeans `oyou can use a name and password to logon from any device.|\nadd_spacer|small|\nadd_textbox|This `wname `owill be reserved for you and `wshown to other players`o, so choose carefully!|\nadd_text_input|username|GrowID||30|\nadd_text_input|password|Password||100|\nadd_text_input|passwordverify|Password Verify||100|\nadd_textbox|Your `wemail address `owill only be used for account verification purposes and won't be spammed or shared. If you use a fake email, you'll never be able to recover or change your password.|\nadd_text_input|email|Email||100|\nadd_textbox|Your `wDiscord ID `owill be used for secondary verification if you lost access to your `wemail address`o! Please enter in such format: `wdiscordname#tag`o. Your `wDiscord Tag `ocan be found in your `wDiscord account settings`o.|\nadd_text_input|discord|Discord||100|\nend_dialog|register|Cancel|Get My GrowID!|\n"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
 						enet_peer_send(peer, 0, packet);
-
 						delete p.data;
 #endif
 				}
@@ -2323,6 +2325,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					string password = "";
 					string passwordverify = "";
 					string email = "";
+					string discord = "";
 					while (std::getline(ss, to, '\n')) {
 						vector<string> infoDat = explode("|", to);
 						if (infoDat.size() == 2) {
@@ -2336,6 +2339,7 @@ int _tmain(int argc, _TCHAR* argv[])
 								if (infoDat[0] == "password") password = infoDat[1];
 								if (infoDat[0] == "passwordverify") passwordverify = infoDat[1];
 								if (infoDat[0] == "email") email = email[1];
+								if (infoDat[0] == "discord") discord = infoDat[1];
 							}
 						}
 					}
@@ -2344,7 +2348,7 @@ int _tmain(int argc, _TCHAR* argv[])
 #ifdef REGISTRATION
 					if (isRegisterDialog) {
 
-						int regState = PlayerDB::playerRegister(username, password, passwordverify, email);
+						int regState = PlayerDB::playerRegister(username, password, passwordverify, email, discord);
 						if (regState == 1) {
 							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rYour account has been created!``"));
 							ENetPacket * packet = enet_packet_create(p.data,
@@ -2380,6 +2384,22 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 						else if (regState == -3) {
 							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4Passwords mismatch!``"));
+							ENetPacket * packet = enet_packet_create(p.data,
+								p.len,
+								ENET_PACKET_FLAG_RELIABLE);
+							enet_peer_send(peer, 0, packet);
+							delete p.data;
+						}
+						else if (regState == -4) {
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4Account creation has failed, because email address is invalid!``"));
+							ENetPacket * packet = enet_packet_create(p.data,
+								p.len,
+								ENET_PACKET_FLAG_RELIABLE);
+							enet_peer_send(peer, 0, packet);
+							delete p.data;
+						}
+						else if (regState == -5) {
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4Account creation has failed, because Discord ID is invalid!``"));
 							ENetPacket * packet = enet_packet_create(p.data,
 								p.len,
 								ENET_PACKET_FLAG_RELIABLE);
