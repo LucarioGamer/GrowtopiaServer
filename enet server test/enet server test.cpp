@@ -2470,6 +2470,44 @@ int _tmain(int argc, _TCHAR* argv[])
 						delete p.data;
 						//enet_host_flush(server);
 					}
+					else if (str.substr(0, 9) == "/weather ") {
+							if (world->name != "ADMIN") {
+								if (world->owner != "") {
+									if (((PlayerInfo*)(peer->data))->rawName == world->owner || isSuperAdmin(((PlayerInfo*)(peer->data))->rawName, ((PlayerInfo*)(peer->data))->tankIDPass))
+
+									{
+										ENetPeer* currentPeer;
+
+										for (currentPeer = server->peers;
+											currentPeer < &server->peers[server->peerCount];
+											++currentPeer)
+										{
+											if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
+												continue;
+											if (isHere(peer, currentPeer))
+											{
+												GamePacket p1 = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`oPlayer `2" + ((PlayerInfo*)(peer->data))->displayName + "`o has just changed the world's weather!"));
+												ENetPacket * packet1 = enet_packet_create(p1.data,
+													p1.len,
+													ENET_PACKET_FLAG_RELIABLE);
+
+												enet_peer_send(currentPeer, 0, packet1);
+												delete p1.data;
+
+												GamePacket p2 = packetEnd(appendInt(appendString(createPacket(), "OnSetCurrentWeather"), atoi(str.substr(9).c_str())));
+												ENetPacket * packet2 = enet_packet_create(p2.data,
+													p2.len,
+													ENET_PACKET_FLAG_RELIABLE);
+
+												enet_peer_send(currentPeer, 0, packet2);
+												delete p2.data;
+												continue; /*CODE UPDATE /WEATHER FOR EVERYONE!*/
+											}
+										}
+									}
+								}
+							}
+						}
 					else if (str == "/count"){
 						int count = 0;
 						ENetPeer * currentPeer;
