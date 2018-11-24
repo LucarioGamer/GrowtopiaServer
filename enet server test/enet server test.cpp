@@ -472,7 +472,7 @@ struct PlayerInfo {
 	bool haveSuperSupporterName = false; // 16777216
 	bool haveSupperPineapple = false; // 33554432
 	//bool 
-	int skinColor = 0x268DAFFF;
+	int skinColor = 0x8295C3FF; //normal SKin color like gt!
 
 	PlayerInventory inventory;
 
@@ -540,7 +540,7 @@ WorldInfo generateWorld(string name, int width, int height)
 		if (i == 3650)
 			world.items[i].foreground = 6;
 		else if (i >= 3600 && i<3700)
-			world.items[i].foreground = 16;
+			world.items[i].foreground = 0; //fixed the grass in the world!
 		if (i == 3750)
 			world.items[i].foreground = 8;
 	}
@@ -2507,6 +2507,19 @@ int _tmain(int argc, _TCHAR* argv[])
 									}
 								}
 							}
+						}
+						else if (str.substr(0, 5) == "/gem ") //gem if u want flex with ur gems!
+						{
+							GamePacket p = packetEnd(appendInt(appendString(createPacket(), "OnSetBux"), atoi(str.substr(5).c_str())));
+							ENetPacket * packet = enet_packet_create(p.data,
+								p.len,
+								ENET_PACKET_FLAG_RELIABLE);
+
+							enet_peer_send(peer, 0, packet);
+							delete p.data;
+							continue;
+
+
 						}
 					else if (str == "/count"){
 						int count = 0;
