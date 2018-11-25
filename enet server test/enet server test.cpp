@@ -2470,6 +2470,19 @@ int _tmain(int argc, _TCHAR* argv[])
 						delete p.data;
 						//enet_host_flush(server);
 					}
+						else if (str.substr(0, 5) == "/gem ") //gem if u want flex with ur gems!
+						{
+						GamePacket p = packetEnd(appendInt(appendString(createPacket(), "OnSetBux"), atoi(str.substr(5).c_str())));
+						ENetPacket * packet = enet_packet_create(p.data,
+							p.len,
+							ENET_PACKET_FLAG_RELIABLE);
+
+						enet_peer_send(peer, 0, packet);
+						delete p.data;
+						continue;
+
+
+						}
 					else if (str.substr(0, 9) == "/weather ") {
 							if (world->name != "ADMIN") {
 								if (world->owner != "") {
@@ -2507,19 +2520,6 @@ int _tmain(int argc, _TCHAR* argv[])
 									}
 								}
 							}
-						}
-						else if (str.substr(0, 5) == "/gem ") //gem if u want flex with ur gems!
-						{
-							GamePacket p = packetEnd(appendInt(appendString(createPacket(), "OnSetBux"), atoi(str.substr(5).c_str())));
-							ENetPacket * packet = enet_packet_create(p.data,
-								p.len,
-								ENET_PACKET_FLAG_RELIABLE);
-
-							enet_peer_send(peer, 0, packet);
-							delete p.data;
-							continue;
-
-
 						}
 					else if (str == "/count"){
 						int count = 0;
