@@ -2462,7 +2462,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						SendPacketRaw(4, packPlayerMoving(&data), 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
 					}
 					else if (str == "/help"){
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
