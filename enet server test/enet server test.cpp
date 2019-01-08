@@ -526,15 +526,15 @@ WorldInfo generateWorld(string name, int width, int height)
 	world.items = new WorldItem[world.width*world.height];
 	for (int i = 0; i < world.width*world.height; i++)
 	{
-		if (i >= 3800 && i<5400 && !(rand() % 50))
-			world.items[i].foreground = 10;
-		else if (i >= 3700 && i<5400)
-		{
-			world.items[i].foreground = 2;
+		if (i >= 3800 && i < 5400 && !(rand() % 50)){ world.items[i].foreground = 10; }
+		else if (i >= 3700 && i < 5400) {
+			if(i > 5000) {
+				if (i % 7 == 0) { world.items[i].foreground = 4;}
+				else { world.items[i].foreground = 2; }
+			}
+			else { world.items[i].foreground = 2; }
 		}
-		else if (i >= 5400) {
-			world.items[i].foreground = 8;
-		}
+		else if (i >= 5400) { world.items[i].foreground = 8; }
 		if (i >= 3700)
 			world.items[i].background = 14;
 		if (i == 3650)
@@ -546,7 +546,6 @@ WorldInfo generateWorld(string name, int width, int height)
 	}
 	return world;
 }
-
 
 class PlayerDB {
 public:
