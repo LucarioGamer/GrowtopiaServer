@@ -1466,7 +1466,7 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 		{
 			if (world->items[x + (y*world->width)].foreground == 6 || world->items[x + (y*world->width)].foreground == 8 || world->items[x + (y*world->width)].foreground == 3760)
 				return;
-			if (tile == 6 || tile == 8 || tile == 3760)
+			if (tile == 6 || tile == 8 || tile == 3760 || tile == 6864)
 				return;
 		}
 		if (world->name == "ADMIN" && !getAdminLevel(((PlayerInfo*)(peer->data))->rawName, ((PlayerInfo*)(peer->data))->tankIDPass))
@@ -1541,7 +1541,9 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 		if(tile == 1902 || tile == 1508 || tile == 428) return;
 		if (tile == 410 || tile == 1770 || tile == 4720 || tile == 4882 || tile == 6392 || tile == 3212 || tile == 1832 || tile == 4742 || tile == 3496 || tile == 3270 || tile == 4722) return;
 		if (tile >= 7068) return;
-		if (tile == 0 || tile == 18) {
+		if (tile == 18) {
+			if (world->items[x + (y*world->width)].background == 6864 && world->items[x + (y*world->width)].foreground == 0) return;
+			if (world->items[x + (y*world->width)].background == 0 && world->items[x + (y*world->width)].foreground == 0) return;
 			//data.netID = -1;
 			data.packetType = 0x8;
 			data.plantingTree = 4;
@@ -1570,7 +1572,8 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 						world->items[x + (y*world->width)].foreground = 0;
 					}
 					else {
-						world->items[x + (y*world->width)].background = 0;
+						data.plantingTree = 6864;
+						world->items[x + (y*world->width)].background = 6864;
 					}
 					
 				}
