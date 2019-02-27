@@ -433,6 +433,8 @@ struct PlayerInfo {
 	bool radio = true;
 	int x;
 	int y;
+	int x1;
+	int y1;
 	bool isRotatedLeft = false;
 
 	bool isUpdating = false;
@@ -471,6 +473,7 @@ struct PlayerInfo {
 	bool haveFlyingPineapple = false; // 8388608
 	bool haveSuperSupporterName = false; // 16777216
 	bool haveSupperPineapple = false; // 33554432
+	bool isGhost = false;
 	//bool 
 	int skinColor = 0x8295C3FF; //normal SKin color like gt!
 
@@ -701,6 +704,15 @@ private:
 
 WorldDB::WorldDB() {
 	// Constructor
+}
+
+void sendConsoleMsg(ENetPeer* peer, string message) {
+	GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), message));
+	ENetPacket * packet = enet_packet_create(p.data,
+		p.len,
+		ENET_PACKET_FLAG_RELIABLE);
+	enet_peer_send(peer, 0, packet);
+	delete p.data;
 }
 
 string getStrUpper(string txt) {
@@ -1743,6 +1755,8 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 				continue;
 			if (isHere(peer, currentPeer))
 			{
+				if(((PlayerInfo*)(currentPeer->data))->isGhost)
+					continue;
 				GamePacket p2 = packetEnd(appendIntx(appendString(appendIntx(appendString(createPacket(), "OnTalkBubble"), ((PlayerInfo*)(currentPeer->data))->netID), ((PlayerInfo*)(currentPeer->data))->displayName), 1));
 				ENetPacket * packet2 = enet_packet_create(p2.data,
 					p2.len,
@@ -2564,6 +2578,42 @@ int _tmain(int argc, _TCHAR* argv[])
 						//enet_host_flush(server);
 						delete p.data;
 					}
+					else if (str == "/invis") {
+						sendConsoleMsg(peer, "`6" + str);
+						if (!pData->isGhost) {
+
+							sendConsoleMsg(peer, "`oYour atoms are suddenly aware of quantum tunneling. (Ghost in the shell mod added)");
+
+							GamePacket p2 = packetEnd(appendFloat(appendString(createPacket(), "OnSetPos"), pData->x, pData->y));
+							memcpy(p2.data + 8, &(((PlayerInfo*)(peer->data))->netID), 4);
+							ENetPacket * packet2 = enet_packet_create(p2.data,
+								p2.len,
+								ENET_PACKET_FLAG_RELIABLE);
+
+							enet_peer_send(peer, 0, packet2);
+							delete p2.data;
+
+							sendState(peer);
+							sendClothes(peer);
+							pData->isGhost = true;
+						}
+						else {
+							sendConsoleMsg(peer, "`oYour body stops shimmering and returns to normal. (Ghost in the shell mod removed)");
+
+							GamePacket p2 = packetEnd(appendFloat(appendString(createPacket(), "OnSetPos"), pData->x1, pData->y1));
+							memcpy(p2.data + 8, &(((PlayerInfo*)(peer->data))->netID), 4);
+							ENetPacket * packet2 = enet_packet_create(p2.data,
+								p2.len,
+								ENET_PACKET_FLAG_RELIABLE);
+
+							enet_peer_send(peer, 0, packet2);
+							delete p2.data;
+							((PlayerInfo*)(peer->data))->isInvisible = false;
+							sendState(peer);
+							sendClothes(peer);
+							pData->isGhost = false;
+						}
+					}
 					else if (str.substr(0, 4) == "/sb ") {
 						using namespace std::chrono;
 						if (((PlayerInfo*)(peer->data))->lastSB + 45000 < (duration_cast<milliseconds>(system_clock::now().time_since_epoch())).count())
@@ -3193,6 +3243,14 @@ int _tmain(int argc, _TCHAR* argv[])
 					if (tankUpdatePacket)
 					{
 						PlayerMoving* pMov = unpackPlayerMoving(tankUpdatePacket);
+						if (((PlayerInfo*)(event.peer->data))->isGhost) {
+							((PlayerInfo*)(event.peer->data))->isInvisible = true;
+							((PlayerInfo*)(event.peer->data))->x1 = pMov->x;
+							((PlayerInfo*)(event.peer->data))->y1 = pMov->y;
+							pMov->x = -1000000
+							pMov->y = -1000000;
+						}
+						
 						switch (pMov->packetType)
 						{
 						case 0:
