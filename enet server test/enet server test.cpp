@@ -2446,6 +2446,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					SendPacketRaw(4, raw, 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);*/
 				}
 				if (cch.find("text|") != std::string::npos){
+					PlayerInfo* pData = ((PlayerInfo*)(peer->data));
 					if (str == "/mod")
 					{
 						((PlayerInfo*)(peer->data))->canWalkInBlocks = true;
