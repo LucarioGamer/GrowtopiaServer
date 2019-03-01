@@ -756,10 +756,10 @@ AWorld WorldDB::get2(string name) {
 		json j;
 		ifs >> j;
 		WorldInfo info;
-		info.name = j["name"];
+		info.name = j["name"].get<string>();
 		info.width = j["width"];
 		info.height = j["height"];
-		info.owner = j["owner"];
+		info.owner = j["owner"].get<string>();
 		info.isPublic = j["isPublic"];
 		json tiles = j["tiles"];
 		int square = info.width*info.height;
@@ -2198,6 +2198,33 @@ int _tmain(int argc, _TCHAR* argv[])
 				//cout << GetTextPointerFromPacket(event.packet) << endl;
 				string cch = GetTextPointerFromPacket(event.packet);
 				string str = cch.substr(cch.find("text|") + 5, cch.length() - cch.find("text|") - 1);
+				if (cch.find("action|wrench") == 0) {
+					vector<string> ex = explode("|", cch);
+					int id = stoi(ex[3]);
+
+					ENetPeer * currentPeer;
+					for (currentPeer = server->peers;
+						currentPeer < &server->peers[server->peerCount];
+						++currentPeer)
+					{
+						if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
+							continue;
+
+						if (isHere(peer, currentPeer)) {
+							if (((PlayerInfo*)(currentPeer->data))->netID == id) {
+								string name = ((PlayerInfo*)(currentPeer->data))->displayName;
+								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnDialogRequest"), "set_default_color|`o\nadd_label_with_icon|big|"+name+"|left|18|\nadd_spacer|small|\nadd_button|chc0|Close|noflags|0|0|\n\nadd_quick_exit|\nnend_dialog|gazette||OK|"));
+								ENetPacket * packet = enet_packet_create(p.data,
+									p.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet);
+								delete p.data;
+							}
+
+						}
+
+					}
+				}
 				if (cch.find("action|respawn") == 0)
 				{
 					int x = 3040;
@@ -3247,7 +3274,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							((PlayerInfo*)(event.peer->data))->isInvisible = true;
 							((PlayerInfo*)(event.peer->data))->x1 = pMov->x;
 							((PlayerInfo*)(event.peer->data))->y1 = pMov->y;
-							pMov->x = -1000000
+							pMov->x = -1000000;
 							pMov->y = -1000000;
 						}
 						
