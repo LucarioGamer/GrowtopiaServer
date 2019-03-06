@@ -1680,6 +1680,13 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 						ENET_PACKET_FLAG_RELIABLE);
 					enet_peer_send(peer, 0, packet);
 					
+					{
+					ENetPacket * packet = enet_packet_create(p.data,
+							p.len,
+							ENET_PACKET_FLAG_RELIABLE);
+						enet_peer_send(currentPeer, 0, packet);	
+					}
+					
 				}
 				{
 					
@@ -3313,6 +3320,7 @@ int _tmain(int argc, _TCHAR* argv[])
 								ENET_PACKET_FLAG_RELIABLE);
 							enet_peer_send(peer, 0, packet3);
 							enet_host_flush(server);*/
+							sendPlayerLeave(peer, (PlayerInfo*)(event.peer->data));
 							sendWorldOffers(peer);
 							// lets take item
 						}
