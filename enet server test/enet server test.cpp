@@ -439,6 +439,8 @@ struct PlayerInfo {
 
 	bool isUpdating = false;
 	bool joinClothesUpdated = false;
+	
+	bool taped = false;
 
 	int cloth_hair = 0; // 0
 	int cloth_shirt = 0; // 1
@@ -2512,8 +2514,99 @@ int _tmain(int argc, _TCHAR* argv[])
 						data.plantingTree = atoi(str.substr(7, cch.length() - 7 - 1).c_str());
 						SendPacketRaw(4, packPlayerMoving(&data), 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
 					}
+					else if (str == "/mods") {
+						string x;
+
+						ENetPeer* currentPeer;
+
+						for (currentPeer = server->peers;
+							currentPeer < &server->peers[server->peerCount];
+							++currentPeer)
+						{
+							if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
+								continue;
+
+							if (getAdminLevel(((PlayerInfo*)(currentPeer->data))->rawName, ((PlayerInfo*)(currentPeer->data))->tankIDPass) > 0) {
+								x.append("`#@" + ((PlayerInfo*)(currentPeer->data))->rawName + "``, ");
+							}
+
+						}
+						x = x.substr(0, x.length() - 2);
+
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "``Moderators online: "+x));
+						ENetPacket * packet = enet_packet_create(p.data,
+							p.len,
+							ENET_PACKET_FLAG_RELIABLE);
+						enet_peer_send(peer, 0, packet);
+					}
+					else if (str.substr(0,10) == "/ducttape ") {
+						if (getAdminLevel(((PlayerInfo*)(peer->data))->rawName, ((PlayerInfo*)(peer->data))->tankIDPass) > 0) {
+							string name = str.substr(10, str.length());
+
+							ENetPeer* currentPeer;
+
+							bool found = false;
+
+							for (currentPeer = server->peers;
+								currentPeer < &server->peers[server->peerCount];
+								++currentPeer)
+							{
+								if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
+									continue;
+
+								if (((PlayerInfo*)(currentPeer->data))->rawName == name) {
+									found = true;
+									if (((PlayerInfo*)(currentPeer->data))->taped) {
+										((PlayerInfo*)(currentPeer->data))->taped = false;
+										GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`2You are no longer duct-taped!"));
+										ENetPacket * packet = enet_packet_create(p.data,
+											p.len,
+											ENET_PACKET_FLAG_RELIABLE);
+										enet_peer_send(currentPeer, 0, packet);
+										delete p.data;
+										{
+											GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`2You have un duct-taped the player!"));
+											ENetPacket * packet = enet_packet_create(p.data,
+												p.len,
+												ENET_PACKET_FLAG_RELIABLE);
+											enet_peer_send(peer, 0, packet);
+										}
+									}
+									else {
+										((PlayerInfo*)(currentPeer->data))->taped = true;
+										GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4You have been duct-taped!"));
+										ENetPacket * packet = enet_packet_create(p.data,
+											p.len,
+											ENET_PACKET_FLAG_RELIABLE);
+										enet_peer_send(currentPeer, 0, packet);
+										{
+											GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`2You have duct-taped the player!"));
+											ENetPacket * packet = enet_packet_create(p.data,
+												p.len,
+												ENET_PACKET_FLAG_RELIABLE);
+											enet_peer_send(peer, 0, packet);
+										}
+									}
+								}
+							}
+							if (!found) {
+								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4Player not found!"));
+								ENetPacket * packet = enet_packet_create(p.data,
+									p.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet);
+							}
+						}
+						else {
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4You need to have a higher admin-level to do that!"));
+							ENetPacket * packet = enet_packet_create(p.data,
+								p.len,
+								ENET_PACKET_FLAG_RELIABLE);
+							enet_peer_send(peer, 0, packet);
+						}
+					}
 					else if (str == "/help"){
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
@@ -2929,7 +3022,17 @@ int _tmain(int argc, _TCHAR* argv[])
 						sendAction(peer, ((PlayerInfo*)(peer->data))->netID, str);
 					} else if (str.length()>0)
 					{
-						sendChatMessage(peer, ((PlayerInfo*)(peer->data))->netID, str);
+						if (((PlayerInfo*)(peer->data))->taped == false) {
+							sendChatMessage(peer, ((PlayerInfo*)(peer->data))->netID, str);
+						}
+						else {
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4Can't talk while youre duct-taped!"));
+							ENetPacket * packet = enet_packet_create(p.data,
+								p.len,
+								ENET_PACKET_FLAG_RELIABLE);
+							enet_peer_send(peer, 0, packet);
+							delete p.data;
+						}
 					}
 					
 			}
