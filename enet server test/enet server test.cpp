@@ -1504,14 +1504,17 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 				if (((PlayerInfo*)(peer->data))->rawName == world->owner) {
 					// WE ARE GOOD TO GO
 					if (tile == 32) {
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnDialogRequest"), "set_default_color|`o\n\nadd_label_with_icon|big|`wShould this world be publicly breakable?``|left|242|\n\nadd_spacer|small|\nadd_button_with_icon|worldPublic|Public|noflags|2408||\nadd_button_with_icon|worldPrivate|Private|noflags|202||\nadd_spacer|small|\nadd_quick_exit|\nadd_button|chc0|Close|noflags|0|0|\nnend_dialog|gazette||OK|"));
-						ENetPacket * packet = enet_packet_create(p.data,
-							p.len,
-							ENET_PACKET_FLAG_RELIABLE);
-						enet_peer_send(peer, 0, packet);
+						if (world->items[x + (y*world->width)].foreground == 242 or world->items[x + (y*world->width)].foreground == 202 or world->items[x + (y*world->width)].foreground == 204 or world->items[x + (y*world->width)].foreground == 206 or world->items[x + (y*world->width)].foreground == 2408 or world->items[x + (y*world->width)].foreground == 5980 or world->items[x + (y*world->width)].foreground == 2950 or world->items[x + (y*world->width)].foreground == 5814 or world->items[x + (y*world->width)].foreground == 4428 or world->items[x + (y*world->width)].foreground == 1796 or world->items[x + (y*world->width)].foreground == 4802 or world->items[x + (y*world->width)].foreground == 4994 or world->items[x + (y*world->width)].foreground == 5260 or world->items[x + (y*world->width)].foreground == 7188)
+						{
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnDialogRequest"), "set_default_color|`o\n\nadd_label_with_icon|big|`wShould this world be publicly breakable?``|left|242|\n\nadd_spacer|small|\nadd_button_with_icon|worldPublic|Public|noflags|2408||\nadd_button_with_icon|worldPrivate|Private|noflags|202||\nadd_spacer|small|\nadd_quick_exit|\nadd_button|chc0|Close|noflags|0|0|\nnend_dialog|gazette||OK|"));
+							ENetPacket * packet = enet_packet_create(p.data,
+								p.len,
+								ENET_PACKET_FLAG_RELIABLE);
+							enet_peer_send(peer, 0, packet);
 
-						//enet_host_flush(server);
-						delete p.data;
+							//enet_host_flush(server);
+							delete p.data;
+						}
 					}
 				}
 				else if (world->isPublic)
