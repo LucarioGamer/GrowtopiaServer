@@ -2528,6 +2528,36 @@ int _tmain(int argc, _TCHAR* argv[])
 						data.plantingTree = atoi(str.substr(7, cch.length() - 7 - 1).c_str());
 						SendPacketRaw(4, packPlayerMoving(&data), 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
 					}
+					else if (str.substr(0, 6) == "/find ")
+					{
+						ItemDefinition def;
+						bool found = false;
+						string itemname = str.substr(6, cch.length() - 6 - 1);
+						for (int o = 0; o < itemDefs.size(); o++)
+						{
+							def = getItemDef(o);
+							if (def.name == itemname)
+							{
+								GamePacket p344 = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rItem ID of " + def.name + ": " + std::to_string(def.id)));
+								ENetPacket * packet344 = enet_packet_create(p344.data,
+									p344.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet344);
+								delete p344.data;
+								found = true;
+							}
+						}
+						if (found == false)
+						{
+							GamePacket p3344 = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4Could not find the following item. Please use uppercase at the beggining, ( for example: Legendary Wings, not legendary wings )."));
+							ENetPacket * packet3344 = enet_packet_create(p3344.data,
+								p3344.len,
+								ENET_PACKET_FLAG_RELIABLE);
+							enet_peer_send(peer, 0, packet3344);
+							delete p3344.data;
+						}
+						found = false;
+					}
 					else if (str == "/mods") {
 						string x;
 
