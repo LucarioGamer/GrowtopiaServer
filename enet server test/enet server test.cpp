@@ -942,6 +942,7 @@ enum ClothTypes {
 enum BlockTypes {
 	FOREGROUND,
 	BACKGROUND,
+	CONSUMMABLE,
 	SEED,
 	PAIN_BLOCK,
 	BEDROCK,
@@ -1027,6 +1028,9 @@ void buildItemsDatabase()
 			}
 			else if(bt == "Seed") {
 				def.blockType = BlockTypes::SEED;
+			}
+			else if(bt == "Consummable") {
+				def.blockType = BlockTypes::CONSUMMABLE;
 			}
 			else if (bt == "Pain_Block") {
 				def.blockType = BlockTypes::PAIN_BLOCK;
@@ -1471,7 +1475,14 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 		data.plantingTree = tile;
 		
 		WorldInfo *world = getPlyersWorld(peer);
-		
+		BlockTypes llek = BlockTypes::SEED;
+		ItemDefinition defee;
+		defee = getItemDef(tile);
+		if (defee.blockType == BlockTypes::CONSUMMABLE)
+		{
+			llek = BlockTypes::CONSUMMABLE;
+		}
+		if (llek == BlockTypes::CONSUMMABLE) return;
 		if (world == NULL) return;
 		if (x<0 || y<0 || x>world->width || y>world->height) return;
 		sendNothingHappened(peer,x,y);
