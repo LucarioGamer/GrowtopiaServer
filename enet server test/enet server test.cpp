@@ -942,7 +942,7 @@ enum ClothTypes {
 enum BlockTypes {
 	FOREGROUND,
 	BACKGROUND,
-	CONSUMMABLE,
+	CONSUMABLE,
 	SEED,
 	PAIN_BLOCK,
 	BEDROCK,
@@ -1030,7 +1030,7 @@ void buildItemsDatabase()
 				def.blockType = BlockTypes::SEED;
 			}
 			else if(bt == "Consummable") {
-				def.blockType = BlockTypes::CONSUMMABLE;
+				def.blockType = BlockTypes::CONSUMABLE;
 			}
 			else if (bt == "Pain_Block") {
 				def.blockType = BlockTypes::PAIN_BLOCK;
@@ -1475,14 +1475,9 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 		data.plantingTree = tile;
 		
 		WorldInfo *world = getPlyersWorld(peer);
-		BlockTypes llek = BlockTypes::SEED;
-		ItemDefinition defee;
-		defee = getItemDef(tile);
-		if (defee.blockType == BlockTypes::CONSUMMABLE)
-		{
-			llek = BlockTypes::CONSUMMABLE;
-		}
-		if (llek == BlockTypes::CONSUMMABLE) return;
+
+		if (getItemDef(tile).blockType == BlockTypes::CONSUMABLE) return;
+
 		if (world == NULL) return;
 		if (x<0 || y<0 || x>world->width || y>world->height) return;
 		sendNothingHappened(peer,x,y);
@@ -3142,7 +3137,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 				if (!((PlayerInfo*)(event.peer->data))->isIn)
 				{
-					GamePacket p = packetEnd(appendString(appendString(appendString(appendString(appendInt(appendString(createPacket(), OnSuperMainStartAcceptLogonHrdxs47254722215a"), HASH), "ubistatic-a.akamaihd.net"), "0098/CDNContent3/cache/"), "cc.cz.madkite.freedom org.aqua.gg idv.aqua.bulldog com.cih.gamecih2 com.cih.gamecih com.cih.game_cih cn.maocai.gamekiller com.gmd.speedtime org.dax.attack com.x0.strai.frep com.x0.strai.free org.cheatengine.cegui org.sbtools.gamehack com.skgames.traffikrider org.sbtoods.gamehaca com.skype.ralder org.cheatengine.cegui.xx.multi1458919170111 com.prohiro.macro me.autotouch.autotouch com.cygery.repetitouch.free com.cygery.repetitouch.pro com.proziro.zacro com.slash.gamebuster"), "proto=42|choosemusic=audio/mp3/about_theme.mp3|active_holiday=0|"));
+					GamePacket p = packetEnd(appendString(appendString(appendString(appendString(appendInt(appendString(createPacket(), "OnSuperMainStartAcceptLogonHrdxs47254722215a"), 1109100565), "ubistatic-a.akamaihd.net"), "0098/CDNContent3/cache/"), "cc.cz.madkite.freedom org.aqua.gg idv.aqua.bulldog com.cih.gamecih2 com.cih.gamecih com.cih.game_cih cn.maocai.gamekiller com.gmd.speedtime org.dax.attack com.x0.strai.frep com.x0.strai.free org.cheatengine.cegui org.sbtools.gamehack com.skgames.traffikrider org.sbtoods.gamehaca com.skype.ralder org.cheatengine.cegui.xx.multi1458919170111 com.prohiro.macro me.autotouch.autotouch com.cygery.repetitouch.free com.cygery.repetitouch.pro com.proziro.zacro com.slash.gamebuster"), "proto=42|choosemusic=audio/mp3/about_theme.mp3|active_holiday=0|"));
 					//for (int i = 0; i < p.len; i++) cout << (int)*(p.data + i) << " ";
 					ENetPacket * packet = enet_packet_create(p.data,
 						p.len,
