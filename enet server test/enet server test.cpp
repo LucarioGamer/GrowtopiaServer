@@ -2523,6 +2523,19 @@ int _tmain(int argc, _TCHAR* argv[])
 						data.plantingTree = atoi(str.substr(7, cch.length() - 7 - 1).c_str());
 						SendPacketRaw(4, packPlayerMoving(&data), 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
 					}
+					else if (str == "/unequip")
+					{
+						((PlayerInfo*)(peer->data))->cloth_hair = 0;
+						((PlayerInfo*)(peer->data))->cloth_shirt = 0;
+						((PlayerInfo*)(peer->data))->cloth_pants = 0;
+						((PlayerInfo*)(peer->data))->cloth_feet = 0;
+						((PlayerInfo*)(peer->data))->cloth_face = 0;
+						((PlayerInfo*)(peer->data))->cloth_hand = 0;
+						((PlayerInfo*)(peer->data))->cloth_back = 0;
+						((PlayerInfo*)(peer->data))->cloth_mask = 0;
+						((PlayerInfo*)(peer->data))->cloth_necklace = 0;
+						sendClothes(peer);
+					}
 					else if (str.substr(0, 6) == "/find ")
 					{
 						ItemDefinition def;
@@ -2645,7 +2658,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 					}
 					else if (str == "/help"){
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb, /find itemname, /unequip, /weather id"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
