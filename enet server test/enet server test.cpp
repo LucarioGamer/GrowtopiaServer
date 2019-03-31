@@ -898,6 +898,7 @@ WorldDB worldDB;
 void saveAllWorlds() // atexit hack plz fix
 {
 	cout << "Saving worlds..." << endl;
+	enet_host_destroy(server);
 	worldDB.saveAll();
 	cout << "Worlds saved!" << endl;
 }
