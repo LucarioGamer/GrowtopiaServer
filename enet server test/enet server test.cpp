@@ -2852,7 +2852,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						delete data;
 						delete p.data;
 					}
-										else if (str.substr(0, 4) == "/jsb ") {
+					else if (str.substr(0, 5) == "/jsb ") {
 						using namespace std::chrono;
 						if (((PlayerInfo*)(peer->data))->lastSB + 45000 < (duration_cast<milliseconds>(system_clock::now().time_since_epoch())).count())
 						{
