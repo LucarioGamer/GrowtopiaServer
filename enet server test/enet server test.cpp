@@ -2032,6 +2032,62 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 		return FALSE;
 	}
 
+std::ifstream::pos_type filesize(const char* filename)
+{
+	std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
+	return in.tellg();
+}
+
+uint32_t HashString(unsigned char* str, int len)
+{
+	if (!str) return 0;
+
+	unsigned char* n = (unsigned char*)str;
+	uint32_t acc = 0x55555555;
+
+	if (len == 0)
+	{
+		while (*n)
+			acc = (acc >> 27) + (acc << 5) + *n++;
+	}
+	else
+	{
+		for (int i = 0; i < len; i++)
+		{
+			acc = (acc >> 27) + (acc << 5) + *n++;
+		}
+	}
+	return acc;
+
+}
+
+unsigned char* getA(string fileName, int* pSizeOut, bool bAddBasePath, bool bAutoDecompress)
+{
+	unsigned char* pData = NULL;
+	FILE* fp = fopen(fileName.c_str(), "rb");
+	if (!fp)
+	{
+		cout << "File not found" << endl;
+		if (!fp) return NULL;
+	}
+
+	fseek(fp, 0, SEEK_END);
+	*pSizeOut = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+
+	pData = (unsigned char*)new unsigned char[((*pSizeOut) + 1)];
+	if (!pData)
+	{
+		printf("Out of memory opening %s?", fileName.c_str());
+		return 0;
+	}
+	pData[*pSizeOut] = 0;
+	fread(pData, *pSizeOut, 1, fp);
+	fclose(fp);
+
+	return pData;
+}
+
 	/*
 	action|log
 msg|`4UPDATE REQUIRED!`` : The `$V2.981`` update is now available for your device.  Go get it!  You'll need to install it before you can play online.
@@ -2057,7 +2113,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	int* p = NULL;
 	*p = 5;*/
 	SetConsoleCtrlHandler(HandlerRoutine, true);
-	
+	int itemdathash ;
 	// load items.dat
 	{
 		std::ifstream file("items.dat", std::ios::binary | std::ios::ate);
@@ -2079,11 +2135,18 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if (file.read((char*)(itemsDat + 60), itemsDatSize))
 		{
-			cout << "Updating item data success!" << endl;
+			uint8_t* pData;
+			int size = 0;
+			const char filename[] = "items.dat";
+			size = filesize(filename);
+			pData = getA((string)filename, &size, false, false);
+			cout << "Updating items data success! Hash: " << HashString((unsigned char*)pData, size) << endl;
+			itemdathash = HashString((unsigned char*)pData, size);
+			file.close(); 
 
 		}
 		else {
-			cout << "Updating item data failed!" << endl;
+			cout << "Updating items data failed! ( no items.dat file found!)" << endl;
 		}
 	}
 	
@@ -3151,12 +3214,15 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 				if (!((PlayerInfo*)(event.peer->data))->isIn)
 				{
-					GamePacket p = packetEnd(appendString(appendString(appendString(appendString(appendInt(appendString(createPacket(), "OnSuperMainStartAcceptLogonHrdxs47254722215a"), -600388060), "ubistatic-a.akamaihd.net"), "0098/CDNContent3/cache/"), "cc.cz.madkite.freedom org.aqua.gg idv.aqua.bulldog com.cih.gamecih2 com.cih.gamecih com.cih.game_cih cn.maocai.gamekiller com.gmd.speedtime org.dax.attack com.x0.strai.frep com.x0.strai.free org.cheatengine.cegui org.sbtools.gamehack com.skgames.traffikrider org.sbtoods.gamehaca com.skype.ralder org.cheatengine.cegui.xx.multi1458919170111 com.prohiro.macro me.autotouch.autotouch com.cygery.repetitouch.free com.cygery.repetitouch.pro com.proziro.zacro com.slash.gamebuster"), "proto=42|choosemusic=audio/mp3/about_theme.mp3|active_holiday=0|"));
-					//for (int i = 0; i < p.len; i++) cout << (int)*(p.data + i) << " ";
-					ENetPacket * packet = enet_packet_create(p.data,
-						p.len,
-						ENET_PACKET_FLAG_RELIABLE);
-					enet_peer_send(peer, 0, packet);
+					if (itemdathash == 0) {
+							enet_peer_disconnect_later(peer, 0);
+						}
+						GamePacket p = packetEnd(appendString(appendString(appendString(appendString(appendInt(appendString(createPacket(), "OnSuperMainStartAcceptLogonHrdxs47254722215a"), itemdathash), "ubistatic-a.akamaihd.net"), "0098/CDNContent3/cache/"), "cc.cz.madkite.freedom org.aqua.gg idv.aqua.bulldog com.cih.gamecih2 com.cih.gamecih com.cih.game_cih cn.maocai.gamekiller com.gmd.speedtime org.dax.attack com.x0.strai.frep com.x0.strai.free org.cheatengine.cegui org.sbtools.gamehack com.skgames.traffikrider org.sbtoods.gamehaca com.skype.ralder org.cheatengine.cegui.xx.multi1458919170111 com.prohiro.macro me.autotouch.autotouch com.cygery.repetitouch.free com.cygery.repetitouch.pro com.proziro.zacro com.slash.gamebuster"), "proto=13|choosemusic=audio/mp3/ykoops.mp3|active_holiday=4"));
+						//for (int i = 0; i < p.len; i++) cout << (int)*(p.data + i) << " ";
+						ENetPacket * packet = enet_packet_create(p.data,
+							p.len,
+							ENET_PACKET_FLAG_RELIABLE);
+						enet_peer_send(peer, 0, packet);
 					
 					//enet_host_flush(server);
 					delete p.data;
