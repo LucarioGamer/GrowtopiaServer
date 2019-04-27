@@ -3332,6 +3332,11 @@ int _tmain(int argc, _TCHAR* argv[])
 						cout << "Entering some world..." << endl;
 #endif
 						try {
+							if (act.length() > 10) {
+								sendConsoleMsg(peer, "`4Sorry, but world names with more than 10 characters is not allowed!"
+								enet_peer_disconnect_later(peer, 0);
+							}
+							else {
 							WorldInfo info = worldDB.get(act);
 							sendWorld(peer, &info);
 							/*string asdf = "0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000070000000000"; // 0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000080000000000000000000000000000000000000000000000000000000000000048133A0500000000BEBB0000070000000000
@@ -3419,6 +3424,7 @@ int _tmain(int argc, _TCHAR* argv[])
 							ENET_PACKET_FLAG_RELIABLE);
 							enet_peer_send(peer, 0, packet);
 							enet_host_flush(server);*/
+							}
 						}
 						catch (int e) {
 							if (e == 1) {
