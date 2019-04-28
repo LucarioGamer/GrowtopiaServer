@@ -3333,7 +3333,7 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 						try {
 							if (act.length() > 10) {
-								sendConsoleMsg(peer, "`4Sorry, but world names with more than 10 characters is not allowed!"
+								sendConsoleMsg(peer, "`4Sorry, but world names with more than 10 characters is not allowed!");
 								enet_peer_disconnect_later(peer, 0);
 							}
 							else {
