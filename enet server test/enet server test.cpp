@@ -2871,7 +2871,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 
 						string name = ((PlayerInfo*)(peer->data))->displayName;
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`w** `5Super-Broadcast`` from `$`2" + name + "`w (in `4JAMMED`w) ** :`` `# " + str.substr(5, cch.length() - 5 - 1)));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`w** `5Super-Broadcast`` from `$`2" + name + "```` (in `4JAMMED``) ** :`` `# " + str.substr(5, cch.length() - 5 - 1)));
 						string text = "action|play_sfx\nfile|audio/beep.wav\ndelayMS|0\n";
 						BYTE* data = new BYTE[5 + text.length()];
 						BYTE zero = 0;
