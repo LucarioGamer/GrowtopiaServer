@@ -2852,14 +2852,14 @@ int _tmain(int argc, _TCHAR* argv[])
 						delete data;
 						delete p.data;
 					}
-										else if (str.substr(0, 4) == "/jsb ") {
+					else if (str.substr(0, 5) == "/jsb ") {
 						using namespace std::chrono;
 						if (((PlayerInfo*)(peer->data))->lastSB + 45000 < (duration_cast<milliseconds>(system_clock::now().time_since_epoch())).count())
 						{
 							((PlayerInfo*)(peer->data))->lastSB = (duration_cast<milliseconds>(system_clock::now().time_since_epoch())).count();
 						}
 						else {
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Wait a minute before using the SB command again!"));
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Wait a minute before using the JSB command again!"));
 							ENetPacket * packet = enet_packet_create(p.data,
 								p.len,
 								ENET_PACKET_FLAG_RELIABLE);
@@ -2871,7 +2871,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 
 						string name = ((PlayerInfo*)(peer->data))->displayName;
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`w** `5Super-Broadcast`` from `$`2" + name + "```` (in `4JAMMED``) ** :`` `# " + str.substr(4, cch.length() - 4 - 1)));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`w** `5Super-Broadcast`` from `$`2" + name + "```` (in `4JAMMED``) ** :`` `# " + str.substr(5, cch.length() - 5 - 1)));
 						string text = "action|play_sfx\nfile|audio/beep.wav\ndelayMS|0\n";
 						BYTE* data = new BYTE[5 + text.length()];
 						BYTE zero = 0;
