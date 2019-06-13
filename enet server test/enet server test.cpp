@@ -436,7 +436,7 @@ struct PlayerInfo {
 	int x1;
 	int y1;
 	bool isRotatedLeft = false;
-
+	string charIP = "";
 	bool isUpdating = false;
 	bool joinClothesUpdated = false;
 	
@@ -2132,6 +2132,7 @@ int _tmain(int argc, _TCHAR* argv[])
 #ifdef TOTAL_LOG
 			printf("A new client connected.\n");
 #endif
+			
 			/* Store any relevant client information here. */
 			//event.peer->data = "Client information";
 			ENetPeer * currentPeer;
@@ -2147,6 +2148,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 
 			event.peer->data = new PlayerInfo;
+			/* Get the string ip from peer */
+			char clientConnection[32];
+			((PlayerInfo*)(peer->data))->charIP = enet_address_get_host_ip(&peer->address, clientConnection, 32);
 			if (count > 3)
 			{
 				GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rToo many accounts are logged on from this IP. Log off one account before playing please.``"));
