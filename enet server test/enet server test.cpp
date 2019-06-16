@@ -2149,8 +2149,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			event.peer->data = new PlayerInfo;
 			/* Get the string ip from peer */
-			char clientConnection[32];
-			((PlayerInfo*)(peer->data))->charIP = enet_address_get_host_ip(&peer->address, clientConnection, 32);
+			char clientConnection[16];
+			enet_address_get_host_ip(&peer->address, clientConnection, 16);
+			((PlayerInfo*)(peer->data))->charIP = clientConnection;
 			if (count > 3)
 			{
 				GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rToo many accounts are logged on from this IP. Log off one account before playing please.``"));
