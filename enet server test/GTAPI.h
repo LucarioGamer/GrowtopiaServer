@@ -112,6 +112,10 @@ public:
 	void endDialog(string name, string accept, string nvm);
 	void addCustom(string name);
 	string finishDialog();
+	
+	operator string() { 
+		return this->dialogstr; 
+	}
 };
 
 
