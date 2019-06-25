@@ -2676,7 +2676,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						string nam1e = "```0" + str.substr(6, cch.length() - 6 - 1);
 							((PlayerInfo*)(event.peer->data))->displayName = str.substr(6, cch.length() - 6 - 1);
 							GamePacket p3 = packetEnd(appendString(appendString(createPacket(), "OnNameChanged"), nam1e));
-							memcpy(p3.data + 8, &(((PlayerInfo*)(peer->data))->netID), 4); // ffloor
+							memcpy(p3.data + 8, &(((PlayerInfo*)(peer->data))->netID), 4);
 							ENetPacket * packet3 = enet_packet_create(p3.data,
 								p3.len,
 								ENET_PACKET_FLAG_RELIABLE);
