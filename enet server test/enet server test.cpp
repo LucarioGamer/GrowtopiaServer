@@ -1054,6 +1054,9 @@ void buildItemsDatabase()
 			else if (bt == "Background_Block") {
 				def.blockType = BlockTypes::BACKGROUND;
 			}
+			else if (bt == "Sheet_Music") {
+				def.blockType = BlockTypes::BACKGROUND;
+			}
 			else {
 				def.blockType = BlockTypes::UNKNOWN;
 			}
@@ -3428,6 +3431,12 @@ int _tmain(int argc, _TCHAR* argv[])
 						catch (int e) {
 							if (e == 1) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
+								GamePacket p2 = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+								ENetPacket* packet2 = enet_packet_create(p2.data,
+									p2.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet2);
+								delete p2.data;
 								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You have exited the world."));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
@@ -3438,6 +3447,12 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else if (e == 2) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
+								GamePacket p2 = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+								ENetPacket* packet2 = enet_packet_create(p2.data,
+									p2.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet2);
+								delete p2.data;
 								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You have entered bad characters in the world name!"));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
@@ -3448,6 +3463,12 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else if (e == 3) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
+								GamePacket p2 = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+								ENetPacket* packet2 = enet_packet_create(p2.data,
+									p2.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet2);
+								delete p2.data;
 								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Exit from what? Click back if you're done playing."));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
@@ -3458,6 +3479,12 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
+								GamePacket p2 = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+								ENetPacket* packet2 = enet_packet_create(p2.data,
+									p2.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet2);
+								delete p2.data;
 								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "I know this menu is magical and all, but it has its limitations! You can't visit this world!"));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
