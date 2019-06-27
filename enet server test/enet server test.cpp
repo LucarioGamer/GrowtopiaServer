@@ -1903,6 +1903,16 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 			}
 		}
 		((PlayerInfo*)(peer->data))->currentWorld = worldInfo->name;
+		if (worldInfo->owner == "") {
+		}
+		else {
+			GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`#[`0" + worldInfo->name + " `9World Locked by " + worldInfo->owner + "`#]"));
+			ENetPacket* packet = enet_packet_create(p.data,
+				p.len,
+				ENET_PACKET_FLAG_RELIABLE);
+			enet_peer_send(peer, 0, packet);
+			delete p.data;
+		}
 		delete data;
 
 	}
