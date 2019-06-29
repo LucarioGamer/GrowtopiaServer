@@ -2675,7 +2675,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 					}
 					else if (str == "/help"){
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb, /find itemname, /unequip, /weather id"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb, /find itemname, /unequip, /weather id, /flag id"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
@@ -2695,6 +2695,32 @@ int _tmain(int argc, _TCHAR* argv[])
 						continue;
 
 
+						}
+					else if (str.substr(0, 6) == "/flag ") {
+						if (!canSB(((PlayerInfo*)(peer->data))->rawName, ((PlayerInfo*)(peer->data))->tankIDPass)) continue;
+						//string lol = str.substr(6, cch.length() - 6 - 1);
+						int lol = atoi(str.substr(6).c_str());
+						
+						sendState(peer);
+						
+						GamePacket p2 = packetEnd(appendIntx(appendIntx(appendIntx(appendIntx(appendString(createPacket(), "OnGuildDataChanged"), 1), 2), lol), 3));
+						memcpy(p2.data + 8, &(((PlayerInfo*)(peer->data))->netID), 4);
+						ENetPacket * packet3 = enet_packet_create(p2.data,
+							p2.len,
+							ENET_PACKET_FLAG_RELIABLE);
+						ENetPeer * currentPeer;
+						for (currentPeer = server->peers;
+							currentPeer < &server->peers[server->peerCount];
+							++currentPeer)
+						{
+							if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
+								continue;
+							if (isHere(peer, currentPeer))
+							{
+								enet_peer_send(currentPeer, 0, packet3);
+							}
+						}
+						delete p2.data;
 						}
 					else if (str.substr(0, 9) == "/weather ") {
 							if (world->name != "ADMIN") {
