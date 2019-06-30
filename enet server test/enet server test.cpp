@@ -2675,13 +2675,35 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 					}
 					else if (str == "/help"){
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb, /find itemname, /unequip, /weather id"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb, /find itemname, /unequip, /weather id, /nick nickname"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
 						enet_peer_send(peer, 0, packet);
 						delete p.data;
 						//enet_host_flush(server);
+					}
+					else if (str.substr(0, 6) == "/nick ") {
+						string nam1e = "```0" + str.substr(6, cch.length() - 6 - 1);
+						((PlayerInfo*)(event.peer->data))->displayName = str.substr(6, cch.length() - 6 - 1);
+						GamePacket p3 = packetEnd(appendString(appendString(createPacket(), "OnNameChanged"), nam1e));
+						memcpy(p3.data + 8, &(((PlayerInfo*)(peer->data))->netID), 4);
+						ENetPacket * packet3 = enet_packet_create(p3.data,
+							p3.len,
+							ENET_PACKET_FLAG_RELIABLE);
+						ENetPeer * currentPeer;
+						for (currentPeer = server->peers;
+							currentPeer < &server->peers[server->peerCount];
+							++currentPeer)
+						{
+							if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
+								continue;
+							if (isHere(peer, currentPeer))
+							{
+								enet_peer_send(currentPeer, 0, packet3);
+							}
+						}
+						delete p3.data;
 					}
 						else if (str.substr(0, 5) == "/gem ") //gem if u want flex with ur gems!
 						{
