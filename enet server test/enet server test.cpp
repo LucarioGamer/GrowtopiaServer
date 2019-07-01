@@ -38,6 +38,8 @@
 #include <thread> // TODO
 #include <mutex> // TODO
 
+#pragma warning(disable : 4996)
+
 using namespace std;
 using json = nlohmann::json;
 
