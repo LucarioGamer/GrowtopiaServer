@@ -438,7 +438,7 @@ struct PlayerInfo {
 	int x1;
 	int y1;
 	bool isRotatedLeft = false;
-
+	string charIP = "";
 	bool isUpdating = false;
 	bool joinClothesUpdated = false;
 	
@@ -1054,6 +1054,9 @@ void buildItemsDatabase()
 				def.blockType = BlockTypes::SIGN;
 			}
 			else if (bt == "Background_Block") {
+				def.blockType = BlockTypes::BACKGROUND;
+			}
+			else if (bt == "Sheet_Music") {
 				def.blockType = BlockTypes::BACKGROUND;
 			}
 			else {
@@ -1902,6 +1905,14 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 			}
 		}
 		((PlayerInfo*)(peer->data))->currentWorld = worldInfo->name;
+		if (worldInfo->owner != "") {
+			GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`#[`0" + worldInfo->name + " `9World Locked by " + worldInfo->owner + "`#]"));
+			ENetPacket* packet = enet_packet_create(p.data,
+				p.len,
+				ENET_PACKET_FLAG_RELIABLE);
+			enet_peer_send(peer, 0, packet);
+			delete p.data;
+		}
 		delete data;
 
 	}
@@ -2197,6 +2208,7 @@ int _tmain(int argc, _TCHAR* argv[])
 #ifdef TOTAL_LOG
 			printf("A new client connected.\n");
 #endif
+			
 			/* Store any relevant client information here. */
 			//event.peer->data = "Client information";
 			ENetPeer * currentPeer;
@@ -2212,6 +2224,10 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 
 			event.peer->data = new PlayerInfo;
+			/* Get the string ip from peer */
+			char clientConnection[16];
+			enet_address_get_host_ip(&peer->address, clientConnection, 16);
+			((PlayerInfo*)(peer->data))->charIP = clientConnection;
 			if (count > 3)
 			{
 				GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`rToo many accounts are logged on from this IP. Log off one account before playing please.``"));
@@ -2724,13 +2740,35 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 					}
 					else if (str == "/help"){
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb, /find itemname, /unequip, /weather id"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb, /find itemname, /unequip, /weather id, /nick nickname"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
 						enet_peer_send(peer, 0, packet);
 						delete p.data;
 						//enet_host_flush(server);
+					}
+					else if (str.substr(0, 6) == "/nick ") {
+						string nam1e = "```0" + str.substr(6, cch.length() - 6 - 1);
+						((PlayerInfo*)(event.peer->data))->displayName = str.substr(6, cch.length() - 6 - 1);
+						GamePacket p3 = packetEnd(appendString(appendString(createPacket(), "OnNameChanged"), nam1e));
+						memcpy(p3.data + 8, &(((PlayerInfo*)(peer->data))->netID), 4);
+						ENetPacket * packet3 = enet_packet_create(p3.data,
+							p3.len,
+							ENET_PACKET_FLAG_RELIABLE);
+						ENetPeer * currentPeer;
+						for (currentPeer = server->peers;
+							currentPeer < &server->peers[server->peerCount];
+							++currentPeer)
+						{
+							if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
+								continue;
+							if (isHere(peer, currentPeer))
+							{
+								enet_peer_send(currentPeer, 0, packet3);
+							}
+						}
+						delete p3.data;
 					}
 						else if (str.substr(0, 5) == "/gem ") //gem if u want flex with ur gems!
 						{
@@ -2917,14 +2955,14 @@ int _tmain(int argc, _TCHAR* argv[])
 						delete data;
 						delete p.data;
 					}
-										else if (str.substr(0, 4) == "/jsb ") {
+					else if (str.substr(0, 5) == "/jsb ") {
 						using namespace std::chrono;
 						if (((PlayerInfo*)(peer->data))->lastSB + 45000 < (duration_cast<milliseconds>(system_clock::now().time_since_epoch())).count())
 						{
 							((PlayerInfo*)(peer->data))->lastSB = (duration_cast<milliseconds>(system_clock::now().time_since_epoch())).count();
 						}
 						else {
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Wait a minute before using the SB command again!"));
+							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Wait a minute before using the JSB command again!"));
 							ENetPacket * packet = enet_packet_create(p.data,
 								p.len,
 								ENET_PACKET_FLAG_RELIABLE);
@@ -2936,7 +2974,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 
 						string name = ((PlayerInfo*)(peer->data))->displayName;
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`w** `5Super-Broadcast`` from `$`2" + name + "```` (in `4JAMMED``) ** :`` `# " + str.substr(4, cch.length() - 4 - 1)));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`w** `5Super-Broadcast`` from `$`2" + name + "```` (in `4JAMMED``) ** :`` `# " + str.substr(5, cch.length() - 5 - 1)));
 						string text = "action|play_sfx\nfile|audio/beep.wav\ndelayMS|0\n";
 						BYTE* data = new BYTE[5 + text.length()];
 						BYTE zero = 0;
@@ -3337,6 +3375,16 @@ int _tmain(int argc, _TCHAR* argv[])
 						delete p.data;
 					}*/
 					sendWorldOffers(peer);
+					
+					// growmoji
+					GamePacket p2ssw = packetEnd(appendString(appendInt(appendString(createPacket(), "OnEmoticonDataChanged"), 201560520), "(wl)|Ä|1&(yes)|Ä‚|1&(no)|Äƒ|1&(love)|Ä„|1&(oops)|Ä…|1&(shy)|Ä†|1&(wink)|Ä‡|1&(tongue)|Äˆ|1&(agree)|Ä‰|1&(sleep)|ÄŠ|1&(punch)|Ä‹|1&(music)|ÄŒ|1&(build)|Ä|1&(megaphone)|ÄŽ|1&(sigh)|Ä|1&(mad)|Ä|1&(wow)|Ä‘|1&(dance)|Ä’|1&(see-no-evil)|Ä“|1&(bheart)|Ä”|1&(heart)|Ä•|1&(grow)|Ä–|1&(gems)|Ä—|1&(kiss)|Ä˜|1&(gtoken)|Ä™|1&(lol)|Äš|1&(smile)|Ä€|1&(cool)|Äœ|1&(cry)|Ä|1&(vend)|Äž|1&(bunny)|Ä›|1&(cactus)|ÄŸ|1&(pine)|Ä¤|1&(peace)|Ä£|1&(terror)|Ä¡|1&(troll)|Ä¢|1&(evil)|Ä¢|1&(fireworks)|Ä¦|1&(football)|Ä¥|1&(alien)|Ä§|1&(party)|Ä¨|1&(pizza)|Ä©|1&(clap)|Äª|1&(song)|Ä«|1&(ghost)|Ä¬|1&(nuke)|Ä­|1&(halo)|Ä®|1&(turkey)|Ä¯|1&(gift)|Ä°|1&(cake)|Ä±|1&(heartarrow)|Ä²|1&(lucky)|Ä³|1&(shamrock)|Ä´|1&(grin)|Äµ|1&(ill)|Ä¶|1&"));
+					ENetPacket * packet2ssw = enet_packet_create(p2ssw.data,
+						p2ssw.len,
+						ENET_PACKET_FLAG_RELIABLE);
+					enet_peer_send(peer, 0, packet2ssw);
+					delete p2ssw.data;
+					
+					
 					GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Server made by Growtopia Noobs, some fixes by iProgramInCpp and items from Nenkai."));
 					ENetPacket * packet = enet_packet_create(p.data,
 						p.len,
@@ -3491,6 +3539,12 @@ int _tmain(int argc, _TCHAR* argv[])
 						catch (int e) {
 							if (e == 1) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
+								GamePacket p2 = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+								ENetPacket* packet2 = enet_packet_create(p2.data,
+									p2.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet2);
+								delete p2.data;
 								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You have exited the world."));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
@@ -3501,6 +3555,12 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else if (e == 2) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
+								GamePacket p2 = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+								ENetPacket* packet2 = enet_packet_create(p2.data,
+									p2.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet2);
+								delete p2.data;
 								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "You have entered bad characters in the world name!"));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
@@ -3511,6 +3571,12 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else if (e == 3) {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
+								GamePacket p2 = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+								ENetPacket* packet2 = enet_packet_create(p2.data,
+									p2.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet2);
+								delete p2.data;
 								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Exit from what? Click back if you're done playing."));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
@@ -3521,6 +3587,12 @@ int _tmain(int argc, _TCHAR* argv[])
 							}
 							else {
 								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
+								GamePacket p2 = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+								ENetPacket* packet2 = enet_packet_create(p2.data,
+									p2.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet2);
+								delete p2.data;
 								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "I know this menu is magical and all, but it has its limitations! You can't visit this world!"));
 								ENetPacket * packet = enet_packet_create(p.data,
 									p.len,
