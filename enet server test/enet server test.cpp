@@ -2697,8 +2697,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 						}
 					else if (str.substr(0, 6) == "/flag ") {
-						if (!canSB(((PlayerInfo*)(peer->data))->rawName, ((PlayerInfo*)(peer->data))->tankIDPass)) continue;
-						//string lol = str.substr(6, cch.length() - 6 - 1);
 						int lol = atoi(str.substr(6).c_str());
 						
 						sendState(peer);
