@@ -2788,9 +2788,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 					else if (str.substr(0, 6) == "/flag ") {
 						int lol = atoi(str.substr(6).c_str());
-						
-						sendState(peer);
-						
+			
 						GamePacket p2 = packetEnd(appendIntx(appendIntx(appendIntx(appendIntx(appendString(createPacket(), "OnGuildDataChanged"), 1), 2), lol), 3));
 						memcpy(p2.data + 8, &(((PlayerInfo*)(peer->data))->netID), 4);
 						ENetPacket * packet3 = enet_packet_create(p2.data,
