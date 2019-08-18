@@ -3333,97 +3333,96 @@ int _tmain(int argc, _TCHAR* argv[])
 #endif
 						try {
 							if (act.length() > 30) {
-								sendConsoleMsg(peer, "`4Sorry, but world names with more than 10 characters is not allowed!");
+								sendConsoleMsg(peer, "`4Sorry, but world names with more than 30 characters are not allowed!");
 								enet_peer_disconnect_later(peer, 0);
-							}
-							else {
-							WorldInfo info = worldDB.get(act);
-							sendWorld(peer, &info);
-							/*string asdf = "0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000070000000000"; // 0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000080000000000000000000000000000000000000000000000000000000000000048133A0500000000BEBB0000070000000000
-							string worldName = "TEST";
-							int xSize=100;
-							int ySize=60;
-							int square = xSize*ySize;
-							__int16 nameLen = worldName.length();
-							int payloadLen = asdf.length() / 2;
-							int dataLen = payloadLen + 2 + nameLen + 12 + (square * 8)+4;
-							BYTE* data = new BYTE[dataLen];
-							for (int i = 0; i < asdf.length(); i += 2)
-							{
-							char x = ch2n(asdf[i]);
-							x = x << 4;
-							x += ch2n(asdf[i + 1]);
-							memcpy(data + (i / 2), &x, 1);
-							}
-							int zero = 0;
-							__int16 item = 0;
-							int smth = 0;
-							for (int i = 0; i < square * 8; i += 4) memcpy(data + payloadLen + i + 14 + nameLen, &zero, 4);
-							for (int i = 0; i < square * 8; i += 8) memcpy(data + payloadLen + i + 14 + nameLen, &item, 2);
-							memcpy(data + payloadLen, &nameLen, 2);
-							memcpy(data + payloadLen + 2, worldName.c_str(), nameLen);
-							memcpy(data + payloadLen + 2 + nameLen, &xSize, 4);
-							memcpy(data + payloadLen + 6 + nameLen, &ySize, 4);
-							memcpy(data + payloadLen + 10 + nameLen, &square, 4);
-							for (int i = 0; i < 1700; i++) {
-							__int16 bed = 100;
-							memcpy(data + payloadLen + (i * 8) + 14 + nameLen + (8 * 100 * 37), &bed, 2);
-							}
-							for (int i = 0; i < 600; i++) {
-							__int16 bed = 8;
-							memcpy(data + payloadLen + (i*8) + 14 + nameLen + (8*100*54), &bed, 2);
-							}
-							memcpy(data + dataLen-4, &smth, 4);
-							ENetPacket * packet2 = enet_packet_create(data,
-							dataLen,
-							ENET_PACKET_FLAG_RELIABLE);
-							enet_peer_send(peer, 0, packet2);
-							enet_host_flush(server);*/
-
-							int x = 3040;
-							int y = 736;
-
-							for (int j = 0; j < info.width*info.height; j++)
-							{
-								if (info.items[j].foreground == 6) {
-									x = (j%info.width) * 32;
-									y = (j / info.width) * 32;
+							} else {
+								WorldInfo info = worldDB.get(act);
+								sendWorld(peer, &info);
+								/*string asdf = "0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000070000000000"; // 0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000080000000000000000000000000000000000000000000000000000000000000048133A0500000000BEBB0000070000000000
+								string worldName = "TEST";
+								int xSize=100;
+								int ySize=60;
+								int square = xSize*ySize;
+								__int16 nameLen = worldName.length();
+								int payloadLen = asdf.length() / 2;
+								int dataLen = payloadLen + 2 + nameLen + 12 + (square * 8)+4;
+								BYTE* data = new BYTE[dataLen];
+								for (int i = 0; i < asdf.length(); i += 2)
+								{
+								char x = ch2n(asdf[i]);
+								x = x << 4;
+								x += ch2n(asdf[i + 1]);
+								memcpy(data + (i / 2), &x, 1);
 								}
-							}
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnSpawn"), "spawn|avatar\nnetID|" + std::to_string(cId) + "\nuserID|" + std::to_string(cId) + "\ncolrect|0|0|20|30\nposXY|" + std::to_string(x) + "|" + std::to_string(y) + "\nname|``" + ((PlayerInfo*)(event.peer->data))->displayName + "``\ncountry|" + ((PlayerInfo*)(event.peer->data))->country + "\ninvis|0\nmstate|0\nsmstate|0\ntype|local\n"));
-							//for (int i = 0; i < p.len; i++) cout << (int)*(p.data + i) << " ";
-							ENetPacket * packet = enet_packet_create(p.data,
-								p.len,
+								int zero = 0;
+								__int16 item = 0;
+								int smth = 0;
+								for (int i = 0; i < square * 8; i += 4) memcpy(data + payloadLen + i + 14 + nameLen, &zero, 4);
+								for (int i = 0; i < square * 8; i += 8) memcpy(data + payloadLen + i + 14 + nameLen, &item, 2);
+								memcpy(data + payloadLen, &nameLen, 2);
+								memcpy(data + payloadLen + 2, worldName.c_str(), nameLen);
+								memcpy(data + payloadLen + 2 + nameLen, &xSize, 4);
+								memcpy(data + payloadLen + 6 + nameLen, &ySize, 4);
+								memcpy(data + payloadLen + 10 + nameLen, &square, 4);
+								for (int i = 0; i < 1700; i++) {
+								__int16 bed = 100;
+								memcpy(data + payloadLen + (i * 8) + 14 + nameLen + (8 * 100 * 37), &bed, 2);
+								}
+								for (int i = 0; i < 600; i++) {
+								__int16 bed = 8;
+								memcpy(data + payloadLen + (i*8) + 14 + nameLen + (8*100*54), &bed, 2);
+								}
+								memcpy(data + dataLen-4, &smth, 4);
+								ENetPacket * packet2 = enet_packet_create(data,
+								dataLen,
 								ENET_PACKET_FLAG_RELIABLE);
-							enet_peer_send(peer, 0, packet);
-							//enet_host_flush(server);
-							delete p.data;
-							((PlayerInfo*)(event.peer->data))->netID = cId;
-							onPeerConnect(peer);
-							cId++;
+								enet_peer_send(peer, 0, packet2);
+								enet_host_flush(server);*/
 
-							sendInventory(peer, ((PlayerInfo*)(event.peer->data))->inventory);
+								int x = 3040;
+								int y = 736;
+
+								for (int j = 0; j < info.width*info.height; j++)
+								{
+									if (info.items[j].foreground == 6) {
+										x = (j%info.width) * 32;
+										y = (j / info.width) * 32;
+									}
+								}
+								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnSpawn"), "spawn|avatar\nnetID|" + std::to_string(cId) + "\nuserID|" + std::to_string(cId) + "\ncolrect|0|0|20|30\nposXY|" + std::to_string(x) + "|" + std::to_string(y) + "\nname|``" + ((PlayerInfo*)(event.peer->data))->displayName + "``\ncountry|" + ((PlayerInfo*)(event.peer->data))->country + "\ninvis|0\nmstate|0\nsmstate|0\ntype|local\n"));
+								//for (int i = 0; i < p.len; i++) cout << (int)*(p.data + i) << " ";
+								ENetPacket * packet = enet_packet_create(p.data,
+									p.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet);
+								//enet_host_flush(server);
+								delete p.data;
+								((PlayerInfo*)(event.peer->data))->netID = cId;
+								onPeerConnect(peer);
+								cId++;
+
+								sendInventory(peer, ((PlayerInfo*)(event.peer->data))->inventory);
 
 
 
-							/*int resx = 95;
-							int resy = 23;*/
+								/*int resx = 95;
+								int resy = 23;*/
 
-							/*for (int i = 0; i < world.width*world.height; i++)
-							{
-							if (world.items[i].foreground == 6) {
-							resx = i%world.width;
-							resy = i / world.width;
-							}
-							}
+								/*for (int i = 0; i < world.width*world.height; i++)
+								{
+								if (world.items[i].foreground == 6) {
+								resx = i%world.width;
+								resy = i / world.width;
+								}
+								}
 
-							GamePacket p2 = packetEnd(appendInt(appendString(createPacket(), "SetRespawnPos"), resx + (world.width*resy)));
-							memcpy(p2.data + 8, &(((PlayerInfo*)(event.peer->data))->netID), 4);
-							ENetPacket * packet2 = enet_packet_create(p2.data,
-							p2.len,
-							ENET_PACKET_FLAG_RELIABLE);
-							enet_peer_send(peer, 0, packet);
-							enet_host_flush(server);*/
+								GamePacket p2 = packetEnd(appendInt(appendString(createPacket(), "SetRespawnPos"), resx + (world.width*resy)));
+								memcpy(p2.data + 8, &(((PlayerInfo*)(event.peer->data))->netID), 4);
+								ENetPacket * packet2 = enet_packet_create(p2.data,
+								p2.len,
+								ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet);
+								enet_host_flush(server);*/
 							}
 						}
 						catch (int e) {
