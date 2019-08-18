@@ -38,6 +38,8 @@
 #include <thread> // TODO
 #include <mutex> // TODO
 
+#pragma warning(disable : 4996)
+
 using namespace std;
 using json = nlohmann::json;
 
@@ -657,6 +659,8 @@ int PlayerDB::playerLogin(ENetPeer* peer, string username, string password) {
 }
 
 int PlayerDB::playerRegister(string username, string password, string passwordverify, string email, string discord) {
+    string name = username;
+    if (name == "CON" || name == "PRN" || name == "AUX" || name == "NUL" || name == "COM1" || name == "COM2" || name == "COM3" || name == "COM4" || name == "COM5" || name == "COM6" || name == "COM7" || name == "COM8" || name == "COM9" || name == "LPT1" || name == "LPT2" || name == "LPT3" || name == "LPT4" || name == "LPT5" || name == "LPT6" || name == "LPT7" || name == "LPT8" || name == "LPT9") return -1;
     username = PlayerDB::getProperName(username);
     if (discord.find("#") == std::string::npos && discord.length() != 0) return -5;
     if (email.find("@") == std::string::npos && email.length() != 0) return -4;
@@ -742,6 +746,7 @@ AWorld WorldDB::get2(string name) {
 	if (name == "EXIT") {
 		throw 3;
 	}
+	if (name == "CON" || name == "PRN" || name == "AUX" || name == "NUL" || name == "COM1" || name == "COM2" || name == "COM3" || name == "COM4" || name == "COM5" || name == "COM6" || name == "COM7" || name == "COM8" || name == "COM9" || name == "LPT1" || name == "LPT2" || name == "LPT3" || name == "LPT4" || name == "LPT5" || name == "LPT6" || name == "LPT7" || name == "LPT8" || name == "LPT9") throw 3;
 	for (int i = 0; i < worlds.size(); i++) {
 		if (worlds.at(i).name == name)
 		{
@@ -2043,6 +2048,62 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 		return FALSE;
 	}
 
+std::ifstream::pos_type filesize(const char* filename)
+{
+	std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
+	return in.tellg();
+}
+
+uint32_t HashString(unsigned char* str, int len)
+{
+	if (!str) return 0;
+
+	unsigned char* n = (unsigned char*)str;
+	uint32_t acc = 0x55555555;
+
+	if (len == 0)
+	{
+		while (*n)
+			acc = (acc >> 27) + (acc << 5) + *n++;
+	}
+	else
+	{
+		for (int i = 0; i < len; i++)
+		{
+			acc = (acc >> 27) + (acc << 5) + *n++;
+		}
+	}
+	return acc;
+
+}
+
+unsigned char* getA(string fileName, int* pSizeOut, bool bAddBasePath, bool bAutoDecompress)
+{
+	unsigned char* pData = NULL;
+	FILE* fp = fopen(fileName.c_str(), "rb");
+	if (!fp)
+	{
+		cout << "File not found" << endl;
+		if (!fp) return NULL;
+	}
+
+	fseek(fp, 0, SEEK_END);
+	*pSizeOut = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+
+	pData = (unsigned char*)new unsigned char[((*pSizeOut) + 1)];
+	if (!pData)
+	{
+		printf("Out of memory opening %s?", fileName.c_str());
+		return 0;
+	}
+	pData[*pSizeOut] = 0;
+	fread(pData, *pSizeOut, 1, fp);
+	fclose(fp);
+
+	return pData;
+}
+
 	/*
 	action|log
 msg|`4UPDATE REQUIRED!`` : The `$V2.981`` update is now available for your device.  Go get it!  You'll need to install it before you can play online.
@@ -2068,7 +2129,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	int* p = NULL;
 	*p = 5;*/
 	SetConsoleCtrlHandler(HandlerRoutine, true);
-	
+	int itemdathash ;
 	// load items.dat
 	{
 		std::ifstream file("items.dat", std::ios::binary | std::ios::ate);
@@ -2090,11 +2151,18 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		if (file.read((char*)(itemsDat + 60), itemsDatSize))
 		{
-			cout << "Updating item data success!" << endl;
+			uint8_t* pData;
+			int size = 0;
+			const char filename[] = "items.dat";
+			size = filesize(filename);
+			pData = getA((string)filename, &size, false, false);
+			cout << "Updating items data success! Hash: " << HashString((unsigned char*)pData, size) << endl;
+			itemdathash = HashString((unsigned char*)pData, size);
+			file.close(); 
 
 		}
 		else {
-			cout << "Updating item data failed!" << endl;
+			cout << "Updating items data failed! ( no items.dat file found!)" << endl;
 		}
 	}
 	
@@ -2675,13 +2743,35 @@ int _tmain(int argc, _TCHAR* argv[])
 						}
 					}
 					else if (str == "/help"){
-						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb, /find itemname, /unequip, /weather id, /flag id"));
+						GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "Supported commands are: /mods, /ducttape, /help, /mod, /unmod, /inventory, /item id, /team id, /color number, /who, /state number, /count, /sb message, /alt, /radio, /gem, /jsb, /find itemname, /unequip, /weather id, /nick nickname, /flag id"));
 						ENetPacket * packet = enet_packet_create(p.data,
 							p.len,
 							ENET_PACKET_FLAG_RELIABLE);
 						enet_peer_send(peer, 0, packet);
 						delete p.data;
 						//enet_host_flush(server);
+					}
+					else if (str.substr(0, 6) == "/nick ") {
+						string nam1e = "```0" + str.substr(6, cch.length() - 6 - 1);
+						((PlayerInfo*)(event.peer->data))->displayName = str.substr(6, cch.length() - 6 - 1);
+						GamePacket p3 = packetEnd(appendString(appendString(createPacket(), "OnNameChanged"), nam1e));
+						memcpy(p3.data + 8, &(((PlayerInfo*)(peer->data))->netID), 4);
+						ENetPacket * packet3 = enet_packet_create(p3.data,
+							p3.len,
+							ENET_PACKET_FLAG_RELIABLE);
+						ENetPeer * currentPeer;
+						for (currentPeer = server->peers;
+							currentPeer < &server->peers[server->peerCount];
+							++currentPeer)
+						{
+							if (currentPeer->state != ENET_PEER_STATE_CONNECTED)
+								continue;
+							if (isHere(peer, currentPeer))
+							{
+								enet_peer_send(currentPeer, 0, packet3);
+							}
+						}
+						delete p3.data;
 					}
 						else if (str.substr(0, 5) == "/gem ") //gem if u want flex with ur gems!
 						{
@@ -3191,7 +3281,10 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 				if (!((PlayerInfo*)(event.peer->data))->isIn)
 				{
-					GamePacket p = packetEnd(appendString(appendString(appendString(appendString(appendInt(appendString(createPacket(), "OnSuperMainStartAcceptLogonHrdxs47254722215a"), 1385479555), "ubistatic-a.akamaihd.net"), "0098/CDNContent3/cache/"), "cc.cz.madkite.freedom org.aqua.gg idv.aqua.bulldog com.cih.gamecih2 com.cih.gamecih com.cih.game_cih cn.maocai.gamekiller com.gmd.speedtime org.dax.attack com.x0.strai.frep com.x0.strai.free org.cheatengine.cegui org.sbtools.gamehack com.skgames.traffikrider org.sbtoods.gamehaca com.skype.ralder org.cheatengine.cegui.xx.multi1458919170111 com.prohiro.macro me.autotouch.autotouch com.cygery.repetitouch.free com.cygery.repetitouch.pro com.proziro.zacro com.slash.gamebuster"), "proto=42|choosemusic=audio/mp3/about_theme.mp3|active_holiday=0|"));
+					if (itemdathash == 0) {
+						enet_peer_disconnect_later(peer, 0);
+					}
+					GamePacket p = packetEnd(appendString(appendString(appendString(appendString(appendInt(appendString(createPacket(), "OnSuperMainStartAcceptLogonHrdxs47254722215a"), itemdathash), "ubistatic-a.akamaihd.net"), "0098/CDNContent3/cache/"), "cc.cz.madkite.freedom org.aqua.gg idv.aqua.bulldog com.cih.gamecih2 com.cih.gamecih com.cih.game_cih cn.maocai.gamekiller com.gmd.speedtime org.dax.attack com.x0.strai.frep com.x0.strai.free org.cheatengine.cegui org.sbtools.gamehack com.skgames.traffikrider org.sbtoods.gamehaca com.skype.ralder org.cheatengine.cegui.xx.multi1458919170111 com.prohiro.macro me.autotouch.autotouch com.cygery.repetitouch.free com.cygery.repetitouch.pro com.proziro.zacro com.slash.gamebuster"), "proto=42|choosemusic=audio/mp3/about_theme.mp3|active_holiday=0|"));
 					//for (int i = 0; i < p.len; i++) cout << (int)*(p.data + i) << " ";
 					ENetPacket * packet = enet_packet_create(p.data,
 						p.len,
@@ -3382,93 +3475,98 @@ int _tmain(int argc, _TCHAR* argv[])
 						cout << "Entering some world..." << endl;
 #endif
 						try {
-							WorldInfo info = worldDB.get(act);
-							sendWorld(peer, &info);
-							/*string asdf = "0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000070000000000"; // 0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000080000000000000000000000000000000000000000000000000000000000000048133A0500000000BEBB0000070000000000
-							string worldName = "TEST";
-							int xSize=100;
-							int ySize=60;
-							int square = xSize*ySize;
-							__int16 nameLen = worldName.length();
-							int payloadLen = asdf.length() / 2;
-							int dataLen = payloadLen + 2 + nameLen + 12 + (square * 8)+4;
-							BYTE* data = new BYTE[dataLen];
-							for (int i = 0; i < asdf.length(); i += 2)
-							{
-							char x = ch2n(asdf[i]);
-							x = x << 4;
-							x += ch2n(asdf[i + 1]);
-							memcpy(data + (i / 2), &x, 1);
-							}
-							int zero = 0;
-							__int16 item = 0;
-							int smth = 0;
-							for (int i = 0; i < square * 8; i += 4) memcpy(data + payloadLen + i + 14 + nameLen, &zero, 4);
-							for (int i = 0; i < square * 8; i += 8) memcpy(data + payloadLen + i + 14 + nameLen, &item, 2);
-							memcpy(data + payloadLen, &nameLen, 2);
-							memcpy(data + payloadLen + 2, worldName.c_str(), nameLen);
-							memcpy(data + payloadLen + 2 + nameLen, &xSize, 4);
-							memcpy(data + payloadLen + 6 + nameLen, &ySize, 4);
-							memcpy(data + payloadLen + 10 + nameLen, &square, 4);
-							for (int i = 0; i < 1700; i++) {
-							__int16 bed = 100;
-							memcpy(data + payloadLen + (i * 8) + 14 + nameLen + (8 * 100 * 37), &bed, 2);
-							}
-							for (int i = 0; i < 600; i++) {
-							__int16 bed = 8;
-							memcpy(data + payloadLen + (i*8) + 14 + nameLen + (8*100*54), &bed, 2);
-							}
-							memcpy(data + dataLen-4, &smth, 4);
-							ENetPacket * packet2 = enet_packet_create(data,
-							dataLen,
-							ENET_PACKET_FLAG_RELIABLE);
-							enet_peer_send(peer, 0, packet2);
-							enet_host_flush(server);*/
-
-							int x = 3040;
-							int y = 736;
-
-							for (int j = 0; j < info.width*info.height; j++)
-							{
-								if (info.items[j].foreground == 6) {
-									x = (j%info.width) * 32;
-									y = (j / info.width) * 32;
+							if (act.length() > 30) {
+								sendConsoleMsg(peer, "`4Sorry, but world names with more than 30 characters are not allowed!");
+								enet_peer_disconnect_later(peer, 0);
+							} else {
+								WorldInfo info = worldDB.get(act);
+								sendWorld(peer, &info);
+								/*string asdf = "0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000070000000000"; // 0400000004A7379237BB2509E8E0EC04F8720B050000000000000000FBBB0000010000007D920100FDFDFDFD04000000040000000000000000000000080000000000000000000000000000000000000000000000000000000000000048133A0500000000BEBB0000070000000000
+								string worldName = "TEST";
+								int xSize=100;
+								int ySize=60;
+								int square = xSize*ySize;
+								__int16 nameLen = worldName.length();
+								int payloadLen = asdf.length() / 2;
+								int dataLen = payloadLen + 2 + nameLen + 12 + (square * 8)+4;
+								BYTE* data = new BYTE[dataLen];
+								for (int i = 0; i < asdf.length(); i += 2)
+								{
+								char x = ch2n(asdf[i]);
+								x = x << 4;
+								x += ch2n(asdf[i + 1]);
+								memcpy(data + (i / 2), &x, 1);
 								}
-							}
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnSpawn"), "spawn|avatar\nnetID|" + std::to_string(cId) + "\nuserID|" + std::to_string(cId) + "\ncolrect|0|0|20|30\nposXY|" + std::to_string(x) + "|" + std::to_string(y) + "\nname|``" + ((PlayerInfo*)(event.peer->data))->displayName + "``\ncountry|" + ((PlayerInfo*)(event.peer->data))->country + "\ninvis|0\nmstate|0\nsmstate|0\ntype|local\n"));
-							//for (int i = 0; i < p.len; i++) cout << (int)*(p.data + i) << " ";
-							ENetPacket * packet = enet_packet_create(p.data,
-								p.len,
+								int zero = 0;
+								__int16 item = 0;
+								int smth = 0;
+								for (int i = 0; i < square * 8; i += 4) memcpy(data + payloadLen + i + 14 + nameLen, &zero, 4);
+								for (int i = 0; i < square * 8; i += 8) memcpy(data + payloadLen + i + 14 + nameLen, &item, 2);
+								memcpy(data + payloadLen, &nameLen, 2);
+								memcpy(data + payloadLen + 2, worldName.c_str(), nameLen);
+								memcpy(data + payloadLen + 2 + nameLen, &xSize, 4);
+								memcpy(data + payloadLen + 6 + nameLen, &ySize, 4);
+								memcpy(data + payloadLen + 10 + nameLen, &square, 4);
+								for (int i = 0; i < 1700; i++) {
+								__int16 bed = 100;
+								memcpy(data + payloadLen + (i * 8) + 14 + nameLen + (8 * 100 * 37), &bed, 2);
+								}
+								for (int i = 0; i < 600; i++) {
+								__int16 bed = 8;
+								memcpy(data + payloadLen + (i*8) + 14 + nameLen + (8*100*54), &bed, 2);
+								}
+								memcpy(data + dataLen-4, &smth, 4);
+								ENetPacket * packet2 = enet_packet_create(data,
+								dataLen,
 								ENET_PACKET_FLAG_RELIABLE);
-							enet_peer_send(peer, 0, packet);
-							//enet_host_flush(server);
-							delete p.data;
-							((PlayerInfo*)(event.peer->data))->netID = cId;
-							onPeerConnect(peer);
-							cId++;
+								enet_peer_send(peer, 0, packet2);
+								enet_host_flush(server);*/
 
-							sendInventory(peer, ((PlayerInfo*)(event.peer->data))->inventory);
+								int x = 3040;
+								int y = 736;
+
+								for (int j = 0; j < info.width*info.height; j++)
+								{
+									if (info.items[j].foreground == 6) {
+										x = (j%info.width) * 32;
+										y = (j / info.width) * 32;
+									}
+								}
+								GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnSpawn"), "spawn|avatar\nnetID|" + std::to_string(cId) + "\nuserID|" + std::to_string(cId) + "\ncolrect|0|0|20|30\nposXY|" + std::to_string(x) + "|" + std::to_string(y) + "\nname|``" + ((PlayerInfo*)(event.peer->data))->displayName + "``\ncountry|" + ((PlayerInfo*)(event.peer->data))->country + "\ninvis|0\nmstate|0\nsmstate|0\ntype|local\n"));
+								//for (int i = 0; i < p.len; i++) cout << (int)*(p.data + i) << " ";
+								ENetPacket * packet = enet_packet_create(p.data,
+									p.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet);
+								//enet_host_flush(server);
+								delete p.data;
+								((PlayerInfo*)(event.peer->data))->netID = cId;
+								onPeerConnect(peer);
+								cId++;
+
+								sendInventory(peer, ((PlayerInfo*)(event.peer->data))->inventory);
 
 
 
-							/*int resx = 95;
-							int resy = 23;*/
+								/*int resx = 95;
+								int resy = 23;*/
 
-							/*for (int i = 0; i < world.width*world.height; i++)
-							{
-							if (world.items[i].foreground == 6) {
-							resx = i%world.width;
-							resy = i / world.width;
+								/*for (int i = 0; i < world.width*world.height; i++)
+								{
+								if (world.items[i].foreground == 6) {
+								resx = i%world.width;
+								resy = i / world.width;
+								}
+								}
+
+								GamePacket p2 = packetEnd(appendInt(appendString(createPacket(), "SetRespawnPos"), resx + (world.width*resy)));
+								memcpy(p2.data + 8, &(((PlayerInfo*)(event.peer->data))->netID), 4);
+								ENetPacket * packet2 = enet_packet_create(p2.data,
+								p2.len,
+								ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet);
+								enet_host_flush(server);*/
 							}
-							}
-
-							GamePacket p2 = packetEnd(appendInt(appendString(createPacket(), "SetRespawnPos"), resx + (world.width*resy)));
-							memcpy(p2.data + 8, &(((PlayerInfo*)(event.peer->data))->netID), 4);
-							ENetPacket * packet2 = enet_packet_create(p2.data,
-							p2.len,
-							ENET_PACKET_FLAG_RELIABLE);
-							enet_peer_send(peer, 0, packet);
-							enet_host_flush(server);*/
 						}
 						catch (int e) {
 							if (e == 1) {
