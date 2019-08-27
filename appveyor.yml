@@ -10,4 +10,5 @@ for:
       - image: Ubuntu
 
   build_script:
+  - cd "enet server test"
   - g++ -o "enet server test" "enet server test.cpp" -std=c++11 -lenet
