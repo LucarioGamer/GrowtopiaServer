@@ -1,0 +1,12 @@
+image:
+- Visual Studio 2015
+- Ubuntu
+
+for:
+-
+  matrix:
+    only:
+      - image: Ubuntu
+
+  build_script:
+  - g++ -o enet server test enet server test.cpp -std=c++11 -lenet
