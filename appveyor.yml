@@ -12,4 +12,4 @@ for:
   build_script:
   - sudo apt-get install build-essential
   - cd "enet server test"
-  - g++ -o "enet server test" "enet server test.cpp" -std=c++11 -lenet
+  - g++ -o "enet server test" "enet server test.cpp" -std=c++11 -lenet -iquote.
