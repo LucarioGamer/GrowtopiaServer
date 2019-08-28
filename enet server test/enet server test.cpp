@@ -26,6 +26,12 @@
 #include <windows.h>
 #include <conio.h>
 #endif
+#ifdef __linux__
+#include <stdio.h>
+char _getch() {
+    return getchar();
+}
+#endif
 #include <vector>
 #include <sstream>
 #include <chrono>
@@ -582,7 +588,7 @@ WorldInfo generateWorld(string name, int width, int height)
 class PlayerDB {
 public:
 	static string getProperName(string name);
-	static string PlayerDB::fixColors(string text);
+	static string fixColors(string text);
 	static int playerLogin(ENetPeer* peer, string username, string password);
 	static int playerRegister(string username, string password, string passwordverify, string email, string discord);
 };
@@ -1317,7 +1323,7 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 			enet_peer_send(peer, 0, p);
 		}
 	}
-	delete packetData;
+	delete (char*)packetData;
 }
 
 
@@ -3899,7 +3905,7 @@ label|Download Latest Version
 			}*/
 			sendPlayerLeave(peer, (PlayerInfo*)(event.peer->data));
 			((PlayerInfo*)(event.peer->data))->inventory.items.clear();
-			delete event.peer->data;
+			delete (PlayerInfo*)event.peer->data;
 			event.peer->data = NULL;
 		}
 	}
