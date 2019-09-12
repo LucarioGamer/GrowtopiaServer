@@ -497,21 +497,21 @@ int getState(PlayerInfo* info) {
 	val |= info->noBody << 5;
 	val |= info->devilHorns << 6;
 	val |= info->goldenHalo << 7;
-	val |= info->isFrozen = << 11;
-	val |= info->isCursed = << 12;
-	val |= info->isDuctaped = << 13;
-	val |= info->haveCigar = << 14;
-	val |= info->isShining = << 15;
-	val |= info->isZombie = << 16;
-	val |= info->isHitByLava = << 17;
-	val |= info->haveHauntedShadows = << 18;
-	val |= info->haveGeigerRadiation = << 19;
-	val |= info->haveReflector = << 20;
-	val |= info->isEgged = << 21;
-	val |= info->havePineappleFloag = << 22;
-	val |= info->haveFlyingPineapple = << 23;
-	val |= info->haveSuperSupporterName = << 24;
-	val |= info->haveSupperPineapple = << 25;
+	val |= info->isFrozen << 11;
+	val |= info->isCursed << 12;
+	val |= info->isDuctaped << 13;
+	val |= info->haveCigar << 14;
+	val |= info->isShining << 15;
+	val |= info->isZombie << 16;
+	val |= info->isHitByLava << 17;
+	val |= info->haveHauntedShadows << 18;
+	val |= info->haveGeigerRadiation << 19;
+	val |= info->haveReflector << 20;
+	val |= info->isEgged << 21;
+	val |= info->havePineappleFloag << 22;
+	val |= info->haveFlyingPineapple << 23;
+	val |= info->haveSuperSupporterName << 24;
+	val |= info->haveSupperPineapple << 25;
 	return val;
 }
 
