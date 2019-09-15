@@ -39,11 +39,11 @@ char _getch() {
 #include "json.hpp"
 #ifdef _WIN32
 #include "bcrypt.h"
-#include "crypt_blowfish/crypt_gensalt.c"
+#include "crypt_blowfish/crypt_gensalt.cpp"
 #include "crypt_blowfish/crypt_blowfish.h"
-#include "crypt_blowfish/crypt_blowfish.c"
-#include "crypt_blowfish/wrapper.c"
-#include "bcrypt.c"
+#include "crypt_blowfish/crypt_blowfish.cpp"
+#include "crypt_blowfish/ow-crypt.cpp"
+#include "bcrypt.cpp"
 #else
 #include "bcrypt.h"
 #include "crypt_blowfish/crypt_gensalt.h"
