@@ -46,9 +46,13 @@ char _getch() {
 #include "bcrypt.cpp"
 #else
 #include "bcrypt.h"
+#include "bcrypt.cpp"
 #include "crypt_blowfish/crypt_gensalt.h"
+#include "crypt_blowfish/crypt_gensalt.cpp"
 #include "crypt_blowfish/crypt_blowfish.h"
+#include "crypt_blowfish/crypt_blowfish.cpp"
 #include "crypt_blowfish/ow-crypt.h"
+#include "crypt_blowfish/ow-crypt.cpp"
 #include "bcrypt.h"
 #endif
 #include <thread> // TODO
