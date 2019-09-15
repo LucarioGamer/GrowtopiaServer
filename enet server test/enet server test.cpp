@@ -22,19 +22,39 @@
 
 #include "enet/enet.h"
 #include <string>
+#ifdef _WIN32
 #include <windows.h>
+#include <conio.h>
+#endif
+#ifdef __linux__
+#include <stdio.h>
+char _getch() {
+    return getchar();
+}
+#endif
 #include <vector>
 #include <sstream>
 #include <chrono>
 #include <fstream>
 #include "json.hpp"
+#ifdef _WIN32
 #include "bcrypt.h"
-#include "crypt_blowfish/crypt_gensalt.c"
+#include "crypt_blowfish/crypt_gensalt.cpp"
 #include "crypt_blowfish/crypt_blowfish.h"
-#include "crypt_blowfish/crypt_blowfish.c"
-#include "crypt_blowfish/wrapper.c"
-#include "bcrypt.c"
-#include <conio.h>
+#include "crypt_blowfish/crypt_blowfish.cpp"
+#include "crypt_blowfish/ow-crypt.cpp"
+#include "bcrypt.cpp"
+#else
+#include "bcrypt.h"
+#include "bcrypt.cpp"
+#include "crypt_blowfish/crypt_gensalt.h"
+#include "crypt_blowfish/crypt_gensalt.cpp"
+#include "crypt_blowfish/crypt_blowfish.h"
+#include "crypt_blowfish/crypt_blowfish.cpp"
+#include "crypt_blowfish/ow-crypt.h"
+#include "crypt_blowfish/ow-crypt.cpp"
+#include "bcrypt.h"
+#endif
 #include <thread> // TODO
 #include <mutex> // TODO
 
@@ -45,11 +65,34 @@ using json = nlohmann::json;
 
 //#define TOTAL_LOG
 #define REGISTRATION
-
+#include <signal.h>
+#ifdef __linux__
+#include <cstdint>
+typedef unsigned char BYTE;
+typedef unsigned char __int8;
+typedef unsigned short __int16;
+typedef unsigned int DWORD;
+#endif
 ENetHost * server;
 int cId = 1;
 BYTE* itemsDat = 0;
 int itemsDatSize = 0;
+//Linux equivalent of GetLastError
+#ifdef __linux__
+string GetLastError() {
+	return strerror(errno);
+}
+//Linux has no byteswap functions.
+ulong _byteswap_ulong(ulong x)
+{
+	// swap adjacent 32-bit blocks
+	//x = (x >> 32) | (x << 32);
+	// swap adjacent 16-bit blocks
+	x = ((x & 0xFFFF0000FFFF0000) >> 16) | ((x & 0x0000FFFF0000FFFF) << 16);
+	// swap adjacent 8-bit blocks
+	return ((x & 0xFF00FF00FF00FF00) >> 8) | ((x & 0x00FF00FF00FF00FF) << 8);
+}
+#endif
 
 /***bcrypt***/
 
@@ -572,7 +615,7 @@ WorldInfo generateWorld(string name, int width, int height)
 class PlayerDB {
 public:
 	static string getProperName(string name);
-	static string PlayerDB::fixColors(string text);
+	static string fixColors(string text);
 	static int playerLogin(ENetPeer* peer, string username, string password);
 	static int playerRegister(string username, string password, string passwordverify, string email, string discord);
 };
@@ -1307,7 +1350,7 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 			enet_peer_send(peer, 0, p);
 		}
 	}
-	delete packetData;
+	delete (char*)packetData;
 }
 
 
@@ -2056,11 +2099,11 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 
 
 
-
-	BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)
-	{
+	//replaced X-to-close with a Ctrl+C exit
+	void exitHandler(int s) {
 		saveAllWorlds();
-		return FALSE;
+		exit(0);
+
 	}
 
 std::ifstream::pos_type filesize(const char* filename)
@@ -2126,13 +2169,19 @@ msg|`4UPDATE REQUIRED!`` : The `$V2.981`` update is now available for your devic
 url|http://ubistatic-a.akamaihd.net/0098/20180909/GrowtopiaInstaller.exe
 label|Download Latest Version
 	*/
-int _tmain(int argc, _TCHAR* argv[])
+//Linux should not have any arguments in main function.
+#ifdef _WIN32
+	int _tmain(int argc, _TCHAR* argv[])
+#else
+	int main()
+#endif
 {
 	cout << "Growtopia private server (c) Growtopia Noobs" << endl;
 	enet_initialize();
-	if (atexit(saveAllWorlds)) {
+	//Unnecessary save at exit. Commented out to make the program exit slightly quicker.
+	/*if (atexit(saveAllWorlds)) {
 		cout << "Worlds won't be saved for this session..." << endl;
-	}
+	}*/
 	/*if (RegisterApplicationRestart(L" -restarted", 0) == S_OK)
 	{
 		cout << "Autorestart is ready" << endl;
@@ -2143,7 +2192,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	Sleep(65000);
 	int* p = NULL;
 	*p = 5;*/
-	SetConsoleCtrlHandler(HandlerRoutine, true);
+	signal(SIGINT, exitHandler);
 	int itemdathash ;
 	// load items.dat
 	{
@@ -3910,7 +3959,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}*/
 			sendPlayerLeave(peer, (PlayerInfo*)(event.peer->data));
 			((PlayerInfo*)(event.peer->data))->inventory.items.clear();
-			delete event.peer->data;
+			delete (PlayerInfo*)event.peer->data;
 			event.peer->data = NULL;
 		}
 	}
