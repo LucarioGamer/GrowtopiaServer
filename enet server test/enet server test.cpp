@@ -37,11 +37,20 @@ char _getch() {
 #include <chrono>
 #include <fstream>
 #include "json.hpp"
+#ifdef _WIN32
+#include "bcrypt.h"
+#include "crypt_blowfish/crypt_gensalt.c"
+#include "crypt_blowfish/crypt_blowfish.h"
+#include "crypt_blowfish/crypt_blowfish.c"
+#include "crypt_blowfish/wrapper.c"
+#include "bcrypt.c"
+#else
 #include "bcrypt.h"
 #include "crypt_blowfish/crypt_gensalt.h"
 #include "crypt_blowfish/crypt_blowfish.h"
 #include "crypt_blowfish/ow-crypt.h"
 #include "bcrypt.h"
+#endif
 #include <thread> // TODO
 #include <mutex> // TODO
 
