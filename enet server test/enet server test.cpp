@@ -3539,7 +3539,13 @@ label|Download Latest Version
 						try {
 							if (act.length() > 30) {
 								sendConsoleMsg(peer, "`4Sorry, but world names with more than 30 characters are not allowed!");
-								enet_peer_disconnect_later(peer, 0);
+								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
+								GamePacket p2 = packetEnd(appendIntx(appendString(createPacket(), "OnFailedToEnterWorld"), 1));
+								ENetPacket* packet2 = enet_packet_create(p2.data,
+									p2.len,
+									ENET_PACKET_FLAG_RELIABLE);
+								enet_peer_send(peer, 0, packet2);
+								delete p2.data;
 							} else {
 								WorldInfo info = worldDB.get(act);
 								sendWorld(peer, &info);
