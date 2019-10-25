@@ -2407,9 +2407,19 @@ label|Download Latest Version
 				string cch = GetTextPointerFromPacket(event.packet);
 				string str = cch.substr(cch.find("text|") + 5, cch.length() - cch.find("text|") - 1);
 				if (cch.find("action|wrench") == 0) {
-					vector<string> ex = explode("|", cch);
-					int id = stoi(ex[3]);
+					std::stringstream ss(cch);
+					std::string to;
+					int id = -1;
+					while (std::getline(ss, to, '\n')) {
+						vector<string> infoDat = explode("|", to);
 
+						if (infoDat[1] == "netid") {
+							id = atoi(infoDat[2].c_str());
+						}
+
+					}
+					if (id < 0) continue; //not found
+ 
 					ENetPeer * currentPeer;
 					for (currentPeer = server->peers;
 						currentPeer < &server->peers[server->peerCount];
