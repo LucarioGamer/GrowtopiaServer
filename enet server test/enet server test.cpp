@@ -2412,7 +2412,7 @@ label|Download Latest Version
 					int id = -1;
 					while (std::getline(ss, to, '\n')) {
 						vector<string> infoDat = explode("|", to);
-
+						if(infoDat.size() < 3) continue;
 						if (infoDat[1] == "netid") {
 							id = atoi(infoDat[2].c_str());
 						}
