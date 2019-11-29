@@ -1137,6 +1137,8 @@ void buildItemsDatabase()
 			def.breakHits = atoi(ex[7].c_str());
 			def.growTime = atoi(ex[8].c_str());
 			string cl = ex[9];
+			
+			#ifdef _WIN32
 			if (cl == "None") {
 				def.clothType = ClothTypes::NONE;
 			}
@@ -1170,6 +1172,43 @@ void buildItemsDatabase()
 			else {
 				def.clothType = ClothTypes::NONE;
 			}
+			#else
+			if (cl.find("None") != string::npos) {
+				def.clothType = ClothTypes::NONE;
+			}
+			else if(cl.find("Hat") != string::npos) {
+				def.clothType = ClothTypes::HAIR;
+			}
+			else if(cl.find("Shirt") != string::npos) {
+				def.clothType = ClothTypes::SHIRT;
+			}
+			else if(cl.find("Pants") != string::npos) {
+				def.clothType = ClothTypes::PANTS;
+			}
+			else if (cl.find("Feet") != string::npos) {
+				def.clothType = ClothTypes::FEET;
+			}
+			else if (cl.find("Face") != string::npos) {
+				def.clothType = ClothTypes::FACE;
+			}
+			else if (cl.find("Hand") != string::npos) {
+				def.clothType = ClothTypes::HAND;
+			}
+			else if (cl.find("Back") != string::npos) {
+				def.clothType = ClothTypes::BACK;
+			}
+			else if (cl.find("Hair") != string::npos) {
+				def.clothType = ClothTypes::MASK;
+			}
+			else if (cl.find("Chest") != string::npos) {
+				def.clothType = ClothTypes::NECKLACE;
+			}
+			else {
+				def.clothType = ClothTypes::NONE;
+			}
+			#endif
+			
+			
 			
 			if (++current != def.id)
 			{
