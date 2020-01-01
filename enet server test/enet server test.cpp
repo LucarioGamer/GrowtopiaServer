@@ -22,6 +22,10 @@
 
 #include "enet/enet.h"
 #include <string>
+#include <algorithm> 
+#include <cctype>
+#include <locale>
+#include <cstdio>
 #ifdef _WIN32
 #include <windows.h>
 #include <conio.h>
@@ -1831,9 +1835,89 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 		delete p2.data;
 	}
 
+	static inline void ltrim(string &s)
+	{
+		s.erase(s.begin(), find_if(s.begin(), s.end(), [](int ch) {
+			return !isspace(ch);
+		}));
+	}
+
+	static inline void rtrim(string &s)
+	{
+		s.erase(find_if(s.rbegin(), s.rend(), [](int ch) {
+			return !isspace(ch);
+		}).base(), s.end());
+	}
+
+	static inline void trim(string &s)
+	{
+		ltrim(s);
+		rtrim(s);
+	}
+
+	static inline string trimString(string s)
+	{
+    	trim(s);
+    	return s;
+	}
+
+	int countSpaces(string& str)
+	{ 
+		int count = 0; 
+		int length = str.length(); 
+		for (int i = 0; i < length; i++)
+		{ 
+			int c = str[i]; 
+			if (isspace(c)) 
+				count++; 
+		}
+		return count; 
+	} 
+  
+	void removeExtraSpaces(string &str) 
+	{
+		int n = str.length(); 
+		int i = 0, j = -1; 
+		bool spaceFound = false; 
+		while (++j < n && str[j] == ' '); 
+	
+		while (j < n) 
+		{ 
+			if (str[j] != ' ') 
+			{ 
+				if ((str[j] == '.' || str[j] == ',' || 
+					str[j] == '?') && i - 1 >= 0 && 
+					str[i - 1] == ' ') 
+					str[i - 1] = str[j++]; 
+				else
+					str[i++] = str[j++]; 
+
+				spaceFound = false; 
+			} 
+ 
+			else if (str[j++] == ' ') 
+			{
+				if (!spaceFound) 
+				{ 
+					str[i++] = ' '; 
+					spaceFound = true; 
+				} 
+			} 
+		}
+		if (i <= 1) 
+        	str.erase(str.begin() + i, str.end()); 
+    	else
+        	str.erase(str.begin() + i, str.end()); 
+	} 
+
 	void sendChatMessage(ENetPeer* peer, int netID, string message)
 	{
-		if (message.length() == 0) return;
+		if (message.length() == 0) return; 
+
+		if (1 > (message.size() - countSpaces(message))) return;
+		removeExtraSpaces(message);
+		message = trimString(message);
+
 		ENetPeer * currentPeer;
 		string name = "";
 		for (currentPeer = server->peers;
@@ -3805,7 +3889,6 @@ label|Download Latest Version
 							if (act == "quit_to_exit")
 							{
 								sendPlayerLeave(peer, (PlayerInfo*)(event.peer->data));
-								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
 								sendWorldOffers(peer);
 
 							}
@@ -4065,4 +4148,3 @@ label|Download Latest Version
 	while (1);
 	return 0;
 }
-
