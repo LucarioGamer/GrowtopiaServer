@@ -1916,9 +1916,10 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 		int square = xSize*ySize;
 		__int16 nameLen = worldName.length();
 		int payloadLen = asdf.length() / 2;
-		int dataLen = payloadLen + 2 + nameLen + 12 + (square * 8) + 4;
-		int allocMem = payloadLen + 2 + nameLen + 12 + (square * 8) + 4 + 16000;
+		int dataLen = payloadLen + 2 + nameLen + 12 + (square * 8) + 104;
+		int allocMem = payloadLen + 2 + nameLen + 12 + (square * 8) + 104 + 16000;
 		BYTE* data = new BYTE[allocMem];
+		memset(data, 0, allocMem)
 		for (int i = 0; i < asdf.length(); i += 2)
 		{
 			char x = ch2n(asdf[i]);
