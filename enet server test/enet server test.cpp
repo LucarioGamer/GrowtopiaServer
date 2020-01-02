@@ -2115,6 +2115,8 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 				BYTE* raw = packPlayerMoving(&data);
 				int var = 0x808000; // placing and breking
 				memcpy(raw+1, &var, 3);
+				float waterspeed = 125.0f;
+				memcpy(raw + 16, &waterspeed, 4);
 				SendPacketRaw(4, raw, 56, 0, currentPeer, ENET_PACKET_FLAG_RELIABLE);
 			}
 		}
