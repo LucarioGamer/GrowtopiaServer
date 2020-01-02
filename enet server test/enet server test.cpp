@@ -3746,6 +3746,7 @@ label|Download Latest Version
                                                                 if (((PlayerInfo*)(peer->data))->taped) {
                                                                 ((PlayerInfo*)(currentPeer->data))->isDuctaped = true;
                                                                 sendState(peer);
+                                                                }
 							}
 						}
 						catch (int e) {
