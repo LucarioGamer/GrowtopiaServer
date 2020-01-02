@@ -2242,7 +2242,19 @@ void loadConfig() {
 	}
 }
 
-
+string randomDuctTapeMessage (size_t length) {
+	auto randchar = []() -> char
+    {
+        const char charset[] =
+        "f"
+        "m";
+        const size_t max_index = (sizeof(charset) - 1);
+        return charset[ rand() % max_index ];
+    };
+    std::string str(length,0);
+    std::generate_n(str.begin(), length, randchar );
+    return str;
+}
 	/*
 	action|log
 msg|`4UPDATE REQUIRED!`` : The `$V2.981`` update is now available for your device.  Go get it!  You'll need to install it before you can play online.
@@ -2854,12 +2866,15 @@ label|Download Latest Version
 									found = true;
 									if (((PlayerInfo*)(currentPeer->data))->taped) {
 										((PlayerInfo*)(currentPeer->data))->taped = false;
+										((PlayerInfo*)(currentPeer->data))->isDuctaped = false;
+										
 										GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`2You are no longer duct-taped!"));
 										ENetPacket * packet = enet_packet_create(p.data,
 											p.len,
 											ENET_PACKET_FLAG_RELIABLE);
 										enet_peer_send(currentPeer, 0, packet);
 										delete p.data;
+										sendState(currentPeer);
 										{
 											GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`2You have un duct-taped the player!"));
 											ENetPacket * packet = enet_packet_create(p.data,
@@ -2870,11 +2885,14 @@ label|Download Latest Version
 									}
 									else {
 										((PlayerInfo*)(currentPeer->data))->taped = true;
+										((PlayerInfo*)(currentPeer->data))->isDuctaped = true;
+							
 										GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4You have been duct-taped!"));
 										ENetPacket * packet = enet_packet_create(p.data,
 											p.len,
 											ENET_PACKET_FLAG_RELIABLE);
 										enet_peer_send(currentPeer, 0, packet);
+										sendState(currentPeer);
 										{
 											GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`2You have duct-taped the player!"));
 											ENetPacket * packet = enet_packet_create(p.data,
@@ -3426,12 +3444,8 @@ label|Download Latest Version
 							sendChatMessage(peer, ((PlayerInfo*)(peer->data))->netID, str);
 						}
 						else {
-							GamePacket p = packetEnd(appendString(appendString(createPacket(), "OnConsoleMessage"), "`4Can't talk while youre duct-taped!"));
-							ENetPacket * packet = enet_packet_create(p.data,
-								p.len,
-								ENET_PACKET_FLAG_RELIABLE);
-							enet_peer_send(peer, 0, packet);
-							delete p.data;
+							// Is duct-taped
+							sendChatMessage(peer, ((PlayerInfo*)(peer->data))->netID, randomDuctTapeMessage(str.length()));
 						}
 					}
 					
