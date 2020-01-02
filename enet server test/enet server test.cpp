@@ -3744,7 +3744,7 @@ label|Download Latest Version
 								enet_peer_send(peer, 0, packet);
 								enet_host_flush(server);*/
                                                                 if (((PlayerInfo*)(peer->data))->taped) {
-                                                                ((PlayerInfo*)(currentPeer->data))->isDuctaped = true;
+                                                                ((PlayerInfo*)(peer->data))->isDuctaped = true;
                                                                 sendState(peer);
                                                                 }
 							}
