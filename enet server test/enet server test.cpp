@@ -3889,6 +3889,7 @@ label|Download Latest Version
 							if (act == "quit_to_exit")
 							{
 								sendPlayerLeave(peer, (PlayerInfo*)(event.peer->data));
+								((PlayerInfo*)(peer->data))->currentWorld = "EXIT";
 								sendWorldOffers(peer);
 
 							}
