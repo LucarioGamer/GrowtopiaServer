@@ -3827,6 +3827,10 @@ label|Download Latest Version
 								ENET_PACKET_FLAG_RELIABLE);
 								enet_peer_send(peer, 0, packet);
 								enet_host_flush(server);*/
+                                                                if (((PlayerInfo*)(peer->data))->taped) {
+                                                                ((PlayerInfo*)(peer->data))->isDuctaped = true;
+                                                                sendState(peer);
+                                                                }
 							}
 						}
 						catch (int e) {
