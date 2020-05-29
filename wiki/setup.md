@@ -97,3 +97,25 @@ RTENDMARKERBS1001
 6. Save the file.
 
 7. Connect to Growtopia
+
+## MacOS:
+1.Open launchpad
+
+2.Open the folder which contains Terminal/Bootcamp
+
+3.Open terminal
+
+4. type this: sudo nano /etc/hosts
+
+5. down arrow to a empty space
+
+6. (serverip) growtopia1.com
+   (serverip) growtopia2.com
+
+7. CTRL X
+
+8.Y
+
+9.ENTER TO SAVE
+
+10. Open Growtopia to start playing!
