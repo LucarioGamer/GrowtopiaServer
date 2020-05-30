@@ -1,42 +1,44 @@
 # Setup HTTP Server
 
-- Depencies are
+Dependencies are:
 - VPS or Your Machine
-- XAMPP or nginx but this tutorial is for XAMPP (Apache)
+- XAMPP or nginx - this tutorial is for XAMPP (Apache)
 
 Download XAMPP here: [Click here to download XAMPP](https://www.apachefriends.org/xampp-files/7.4.6/xampp-windows-x64-7.4.6-0-VC15-installer.exe)
 
+**NOTE**: You can also use Linux to host web server.
+
 ## Steps:
-1. locate path `C:\xampp\htdocs\`
+1. Locate path `C:\xampp\htdocs\`
 
-2. create new folder called `Growtopia`
+2. Create new folder called `Growtopia`
 
-3. make file called `server_data.php` on `Growtopia` folder
+3. Make file called `server_data.php` on `Growtopia` folder
 
-4. copy + paste this inside `server_data.php` file
+4. Copy + paste this inside `server_data.php` file
 
-```html
-server|<your server IP or 127.0.0.1 if you use local>
+```
+server|<your gameserver (not webserver unless they are the same) IP or 127.0.0.1 if you use local>
 port|17091
 type|1
-#maint|Unused for now
+#maint|<your maintenance text, remove the # to block all connections>
 beta_server|127.0.0.1
 beta_port|17091
 beta_type|1
 meta|localhost
 RTENDMARKERBS1001
 ```
-5. if you're using vps (Virtual Private Server) you need to change `server|127.0.0.1` to `server| your vps ip here` and if your're localhost then you dont need do anything.
+**NOTE**: Your game server IP (that's the `server|` part) doesn't need to be the same as the webserver's IP, but, in most cases, they are. You replace `<your gameserver (not webserver unless they are the same) IP or 127.0.0.1 if you use local>` with your game/webserver IP. Also replace `<your maintenance text, remove the # to block all connections>` with your maintenance text.
 
-6. open Xampp control panel.
+5. Open XAMPP control panel.
 
-7. Start Apache Module
+6. Start Apache Module
 
 **Notice if you are using VPS (Virtual Private Server) you have to disable firewall to make the connection work**
 
-# Setup Server
+# Setting up the Game Server
 
-- Depencies
+Dependencies
 - Visual Studio 2015 or newer.
 - Basic knowledge of using Visual Studio
 - GrowtopiaServer files.
@@ -58,7 +60,7 @@ RTENDMARKERBS1001
 
 8. Run the "enet server test.exe" and your server should work. If you get errors, install the Visual Studio 2015/2017/2019 C++ Redistributable (check the domain to be `microsoft.com` first!) and the application should start.
 
-# How to Join into your server.
+# How to enter your server
 
 ## Android:
 1. Create Hosts file on your computer or VPS
