@@ -2,9 +2,9 @@
 
 - Depencies are
 - VPS or Your Machine
-- Xampp or nginx but this tutorial is for Xampp (Apache)
+- XAMPP or nginx but this tutorial is for XAMPP (Apache)
 
-Download Xampp here : [Click here to download Xampp](https://www.apachefriends.org/xampp-files/7.4.6/xampp-windows-x64-7.4.6-0-VC15-installer.exe)
+Download XAMPP here: [Click here to download XAMPP](https://www.apachefriends.org/xampp-files/7.4.6/xampp-windows-x64-7.4.6-0-VC15-installer.exe)
 
 ## Steps:
 1. locate path `C:\xampp\htdocs\`
@@ -16,7 +16,7 @@ Download Xampp here : [Click here to download Xampp](https://www.apachefriends.o
 4. copy + paste this inside `server_data.php` file
 
 ```html
-server|127.0.0.1
+server|<your server IP or 127.0.0.1 if you use local>
 port|17091
 type|1
 #maint|Unused for now
@@ -32,35 +32,36 @@ RTENDMARKERBS1001
 
 7. Start Apache Module
 
-**Notice if you are using vps (Virtual Private Server) you have to disable firewall to make the connection work**
+**Notice if you are using VPS (Virtual Private Server) you have to disable firewall to make the connection work**
 
 # Setup Server
 
 - Depencies
-- Visual Studio 2015 or Newer.
+- Visual Studio 2015 or newer.
 - Basic knowledge of using Visual Studio
 - GrowtopiaServer files.
 
 ## Steps:
-1. Download or clone GrowtopiaServer Repository (https://github.com/GrowtopiaNoobs/GrowtopiaServer.git)
+1. Download or clone GrowtopiaServer Repository (https://github.com/ipr0gr4mipas2/GrowtopiaServer)
 
 2. Download Visual Studio 2015 or Newer (you can skip this step if you already have it
-3. Open "enet server test" project.
 
-4. Press `CTRL + SHIFT + B` to build the project.
+3. Open "enet server test.sln" file (solution)
 
-5. After its built press `WINDOWS + R` and type `%localappdata%\Growtopia\cache` and copy `items.dat` to your desktop
+4. Press `CTRL + SHIFT + B` to build the project, or `F5` to debug.
+
+5. After it's built, press `WINDOWS + R` and type `%localappdata%\Growtopia\cache` and copy `items.dat` to your desktop
 
 6. Then put `enet server test.exe` from the debug folder and `items.dat` from desktop to the same folder
 
-7. If youre using vps (Virtual Private Server) Download / Copy the files into your vps if youre making localhost server you can skip this step.
+7. If youre using VPS (Virtual Private Server) download / copy the files into your VPS. If you're making local/development server you can skip this step.
 
-8. Run the "enet server test.exe" and your server should work if you get error install the visual studio version c++ redistributable and the application should start.
+8. Run the "enet server test.exe" and your server should work. If you get errors, install the Visual Studio 2015/2017/2019 C++ Redistributable (check the domain to be `microsoft.com` first!) and the application should start.
 
 # How to Join into your server.
 
 ## Android:
-1. Create Hosts file on your computer or vps
+1. Create Hosts file on your computer or VPS
 
 2. Type this to the file:
 
@@ -81,7 +82,7 @@ RTENDMARKERBS1001
 ## Windows:
 1. Press `WINDOWS + R`
 
-2. Open notepad as administrator
+2. Open Notepad/Notepad++/ as administrator
 
 3. Locate path: `C:\Windows\System32\drivers\etc`
 
@@ -96,26 +97,29 @@ RTENDMARKERBS1001
 
 6. Save the file.
 
-7. Connect to Growtopia
+7. Connect to Growtopia.
 
 ## MacOS:
-1.Open launchpad
+1. Open launchpad
 
-2.Open the folder which contains Terminal/Bootcamp
+2. Open the folder which contains Terminal/Bootcamp
 
-3.Open terminal
+3. Open terminal
 
-4. type this: sudo nano /etc/hosts
+4. Type this: `sudo nano /etc/hosts`. This command allows you to edit the hosts file. It can also apply to linux.
 
-5. down arrow to a empty space
+5. Find an empty space
 
-6. (serverip) growtopia1.com
-   (serverip) growtopia2.com
+6. Type in the file:
+```
+(serverip) growtopia1.com
+(serverip) growtopia2.com
+```
 
-7. CTRL X
+7. CTRL+X to Save and Exit
 
-8.Y
+8. Type y if you want to save
 
-9.ENTER TO SAVE
+9. Connect to GT.
 
 10. Open Growtopia to start playing!
