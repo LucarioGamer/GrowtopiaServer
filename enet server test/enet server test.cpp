@@ -2873,7 +2873,7 @@ label|Download Latest Version
 				{
 					PlayerInfo* pInfo = (PlayerInfo*)peer->data;
 					string item = cch.substr(buyHdrText.length());
-					packet::storepurchaseresult(peer, "The store is unavailable right now.");
+					packet::storepurchaseresult(peer, "The store has not been added, please add it.");
 				}
 				if (cch.find("action|respawn") == 0)
 				{
