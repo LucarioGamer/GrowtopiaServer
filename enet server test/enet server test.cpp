@@ -827,6 +827,12 @@ namespace packet {
 		p.Insert(message);
 		p.CreatePacket(peer);
 	}
+	void storepurchaseresult(ENetPeer* peer, string message) {
+		gamepacket_t p;
+		p.Insert("OnStorePurchaseResult");
+		p.Insert(message);
+		p.CreatePacket(peer);
+	}
 }
 
 string getStrUpper(string txt) {
@@ -2861,6 +2867,13 @@ label|Download Latest Version
 					}
 					((PlayerInfo*)(peer->data))->skinColor = id;
 					sendClothes(peer);
+				}
+				string buyHdrText = "action|buy\nitem|";
+				if (cch.find(buyHdrText) == 0)
+				{
+					PlayerInfo* pInfo = (PlayerInfo*)peer->data;
+					string item = cch.substr(buyHdrText.length());
+					packet::storepurchaseresult(peer, "The store is unavailable right now.");
 				}
 				if (cch.find("action|respawn") == 0)
 				{
