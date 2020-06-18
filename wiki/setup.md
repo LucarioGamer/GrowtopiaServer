@@ -43,6 +43,28 @@ Dependencies
 - Basic knowledge of using Visual Studio
 - GrowtopiaServer files.
 
+## Additional file
+- `config.json`
+Example for the `config.json`:
+```
+{
+	"port": 17091,
+	"cdn": "0098/CDNContent64/cache/"
+}
+```
+- `news.txt`
+Example for the `news.txt`:
+```
+set_default_color|`o
+
+add_label_with_icon|big|`wThe Growtopia Gazette``|left|5016|
+add_spacer|small|
+add_image_button|banner|interface/large/news_banner.rttex|noflags|||
+add_spacer|small|
+add_textbox|`wGrowtopia Server``|left|
+end_dialog|gazette||OK|
+```
+
 ## Steps:
 1. Download or clone GrowtopiaServer Repository (https://github.com/ipr0gr4mipas2/GrowtopiaServer)
 
@@ -56,9 +78,11 @@ Dependencies
 
 6. Then put `enet server test.exe` from the debug folder and `items.dat` from desktop to the same folder
 
-7. If youre using VPS (Virtual Private Server) download / copy the files into your VPS. If you're making local/development server you can skip this step.
+7. After that put the `config.json` and `news.txt` into the server folder
 
-8. Run the "enet server test.exe" and your server should work. If you get errors, install the Visual Studio 2015/2017/2019 C++ Redistributable (check the domain to be `microsoft.com` first!) and the application should start.
+8. If youre using VPS (Virtual Private Server) download / copy the files into your VPS. If you're making local/development server you can skip this step.
+
+9. Run the "enet server test.exe" and your server should work. If you get errors, install the Visual Studio 2015/2017/2019 C++ Redistributable (check the domain to be `microsoft.com` first!) and the application should start.
 
 # How to enter your server
 
