@@ -61,7 +61,7 @@ add_label_with_icon|big|`wThe Growtopia Gazette``|left|5016|
 add_spacer|small|
 add_image_button|banner|interface/large/news_banner.rttex|noflags|||
 add_spacer|small|
-add_textbox|`wGrowtopia Server``|left|
+add_textbox|`oThis is my very own `wGrowtopia Private Server``, welcome! Enjoy playing here!``|left|
 end_dialog|gazette||OK|
 ```
 
