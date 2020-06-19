@@ -2740,10 +2740,13 @@ label|Download Latest Version
 	cout << "Building items database..." << endl;
 	ifstream myFile("items.dat");
 	if (myFile.fail()) {
-		cout << "Items.dat Not found!" << endl;
-		cout << "Please put items.dat in here" << endl;
-		cout << "if you dont have items.dat, You can get it from Growtopia Folder" << endl;
-		system("pause");
+		std::cout << "Items.dat not found!" << endl;
+		std::cout << "Please put items.dat in this folder:" << endl;
+                system("cd");
+		std::cout << "If you dont have items.dat, you can get it from Growtopia cache folder. Please exit." << endl;
+		//Sleep(10000);
+                //exit(-1);
+                while (true); // cross platform solution (Linux pls!)
 	}
 	buildItemsDatabase();
 	cout << "Database is built!" << endl;
