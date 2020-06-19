@@ -2737,8 +2737,14 @@ label|Download Latest Version
 	}
 	server->checksum = enet_crc32;
 	enet_host_compress_with_range_coder(server);
-
 	cout << "Building items database..." << endl;
+	ifstream myFile("items.dat");
+	if (myFile.fail()) {
+		cout << "Items.dat Not found!" << endl;
+		cout << "Please put items.dat in here" << endl;
+		cout << "if you dont have items.dat, You can get it from Growtopia Folder" << endl;
+		system("pause");
+	}
 	buildItemsDatabase();
 	cout << "Database is built!" << endl;
 	loadnews();
