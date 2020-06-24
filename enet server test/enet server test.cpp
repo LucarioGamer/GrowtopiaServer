@@ -444,6 +444,7 @@ struct PlayerInventory {
 #define cloth6 cloth_back
 #define cloth7 cloth_mask
 #define cloth8 cloth_necklace
+#define cloth9 cloth_ances
 
 struct PlayerInfo {
 	bool isIn = false;
@@ -480,6 +481,7 @@ struct PlayerInfo {
 	int cloth_back = 0; // 6
 	int cloth_mask = 0; // 7
 	int cloth_necklace = 0; // 8
+	int cloth_ances=0; // 9
 
 	bool canWalkInBlocks = false; // 1
 	bool canDoubleJump = false; // 2
@@ -1768,7 +1770,7 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 				p.Insert(((PlayerInfo*)(peer->data))->cloth_feet, ((PlayerInfo*)(peer->data))->cloth_face, ((PlayerInfo*)(peer->data))->cloth_hand);
 				p.Insert(((PlayerInfo*)(peer->data))->cloth_back, ((PlayerInfo*)(peer->data))->cloth_mask, ((PlayerInfo*)(peer->data))->cloth_necklace);
 				p.Insert(((PlayerInfo*)(peer->data))->skinColor);
-				p.Insert(0.0f, 0.0f, 0.0f);
+				p.Insert(((PlayerInfo*)(peer->data))->cloth_ances, 0.0f, 0.0f);
 				p.CreatePacket(currentPeer);
 
 				gamepacket_t p2(0, ((PlayerInfo*)(peer->data))->netID);
@@ -1777,7 +1779,7 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 				p2.Insert(((PlayerInfo*)(peer->data))->cloth_feet, ((PlayerInfo*)(peer->data))->cloth_face, ((PlayerInfo*)(peer->data))->cloth_hand);
 				p2.Insert(((PlayerInfo*)(peer->data))->cloth_back, ((PlayerInfo*)(peer->data))->cloth_mask, ((PlayerInfo*)(peer->data))->cloth_necklace);
 				p2.Insert(((PlayerInfo*)(peer->data))->skinColor);
-				p2.Insert(0.0f, 0.0f, 0.0f);
+				p2.Insert(((PlayerInfo*)(peer->data))->cloth_ances, 0.0f, 0.0f);
 				p2.CreatePacket(peer);
 			}
 		}
@@ -1792,7 +1794,7 @@ void SendPacketRaw(int a1, void *packetData, size_t packetDataSize, void *a4, EN
 		p.Insert(((PlayerInfo*)(peer->data))->cloth_feet, ((PlayerInfo*)(peer->data))->cloth_face, ((PlayerInfo*)(peer->data))->cloth_hand);
 		p.Insert(((PlayerInfo*)(peer->data))->cloth_back, ((PlayerInfo*)(peer->data))->cloth_mask, ((PlayerInfo*)(peer->data))->cloth_necklace);
 		p.Insert(((PlayerInfo*)(peer->data))->skinColor);
-		p.Insert(0.0f, 0.0f, 0.0f);
+		p.Insert(((PlayerInfo*)(peer->data))->cloth_ances, 0.0f, 0.0f);
 		for (currentPeer = server->peers;
 			currentPeer < &server->peers[server->peerCount];
 			++currentPeer)
@@ -4057,6 +4059,14 @@ label|Download Latest Version
 								}
 								((PlayerInfo*)(event.peer->data))->cloth8 = pMov->plantingTree;
 								break;
+							case 9:
+								if (((PlayerInfo*)(event.peer->data))->cloth9 == pMov->plantingTree)
+								{
+									((PlayerInfo*)(event.peer->data))->cloth9 = 0;
+									break;
+								}
+								((PlayerInfo*)(event.peer->data))->cloth9 = pMov->plantingTree;
+								break;							
 							default:
 #ifdef TOTAL_LOG
 								cout << "Invalid item activated: " << pMov->plantingTree << " by " << ((PlayerInfo*)(event.peer->data))->displayName << endl;
