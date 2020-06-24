@@ -2612,19 +2612,11 @@ void loadConfig() {
 			cout << "Config loaded." << endl;
 		} catch (...) {
 			cout << "Invalid Config, Fixing..." << endl;
-			string open = "{";
-			string space = "\n";
-			string port = "port";
-			string port1 = ": 17091,";
-			string cdn = "cdn";
-			char t2 = ':';
-			string cdn1 = "0098/CDNContent61/cache/";
-			string close = "}";
-			char a = '"';
+			string config_contents = "{ \"port\": 17091, \"cdn\": \"0098/CDNContent61/cache/\" }";
 
 			ofstream myfile1;
 			myfile1.open("config.json");
-			myfile1 << open + space + a + port + a + port1 + space + a + cdn + a + t2 + a + cdn1 + a + space + close;
+			myfile1 << config_contents;
 			myfile1.close();
 			cout << "Config Has Been Fixed! Reloading..." << endl;
 			std::ifstream ifs("config.json");
@@ -2638,19 +2630,11 @@ void loadConfig() {
 		}
 	} else {
 		cout << "Config not found, Creating..." << endl;
-		string open = "{";
-		string space = "\n";
-		string port = "port";
-		string port1 = ": 17091,";
-		string cdn = "cdn";
-		char t2 = ':';
-		string cdn1 = "0098/CDNContent61/cache/";
-		string close = "}";
-		char a = '"';
+		string config_contents = "{ \"port\": 17091, \"cdn\": \"0098/CDNContent61/cache/\" }";
 
 		ofstream myfile1;
 		myfile1.open("config.json");
-		myfile1 << open + space + a + port + a + port1 + space + a + cdn + a + t2 + a + cdn1 + a + space + close;
+		myfile1 << config_contents;
 		myfile1.close();
 		cout << "Config Has Been Created! Reloading..." << endl;
 		std::ifstream ifs("config.json");
