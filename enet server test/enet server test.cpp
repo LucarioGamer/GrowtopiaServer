@@ -1241,6 +1241,7 @@ void buildItemsDatabase()
 	string secret = "PBG892FXX982ABC*";
 	std::ifstream file("items.dat", std::ios::binary | std::ios::ate);
 	int size = file.tellg();
+	itemsDatSize = size;
 	char* data = new char[size];
 	file.seekg(0, std::ios::beg);
 
