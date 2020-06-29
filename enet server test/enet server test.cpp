@@ -342,6 +342,9 @@ public:
 		memcpy(packet_data + 16, &CharState, 4);
 		memcpy(packet_data + 24, &delay, 4);
 	};
+	~gamepacket_t() {
+		delete[] packet_data;
+	}
 
 	void Insert(string a) {
 		byte* data = new byte[len + 2 + a.length() + 4];
@@ -423,7 +426,6 @@ public:
 	void CreatePacket(ENetPeer* peer) {
 		ENetPacket* packet = enet_packet_create(packet_data, len, 1);
 		enet_peer_send(peer, 0, packet);
-		delete[] packet_data;
 	}
 };
 
