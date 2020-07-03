@@ -964,7 +964,7 @@ void WorldDB::saveAll()
 {
 	for (int i = 0; i < worlds.size(); i++) {
 		flush(worlds.at(i));
-		delete worlds.at(i).items;
+		delete[] worlds.at(i).items;
 	}
 	worlds.clear();
 }
