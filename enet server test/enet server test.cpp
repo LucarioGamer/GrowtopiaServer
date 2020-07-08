@@ -956,7 +956,7 @@ void WorldDB::flush2(AWorld info)
 void WorldDB::save(AWorld info)
 {
 	flush2(info);
-	delete info.info.items;
+	delete[] info.info.items;
 	worlds.erase(worlds.begin() + info.id);
 }
 
@@ -964,7 +964,7 @@ void WorldDB::saveAll()
 {
 	for (int i = 0; i < worlds.size(); i++) {
 		flush(worlds.at(i));
-		delete worlds.at(i).items;
+		delete[] worlds.at(i).items;
 	}
 	worlds.clear();
 }
@@ -1013,7 +1013,7 @@ void WorldDB::saveRedundant()
 		if (canBeFree)
 		{
 			flush(worlds.at(i));
-			delete worlds.at(i).items;
+			delete[] worlds.at(i).items;
 			worlds.erase(worlds.begin() + i);
 			i--;
 		}
