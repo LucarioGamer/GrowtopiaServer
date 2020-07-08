@@ -342,10 +342,14 @@ public:
 		memcpy(packet_data + 16, &CharState, 4);
 		memcpy(packet_data + 24, &delay, 4);
 	};
+	~gamepacket_t(){
+		delete[] packet_data;
+	}
 
 	void Insert(string a) {
 		byte* data = new byte[len + 2 + a.length() + 4];
 		memcpy(data, packet_data, len);
+		delete packet_data[];
 		packet_data = data;
 		data[len] = index;
 		data[len + 1] = 0x2;
@@ -359,6 +363,7 @@ public:
 	void Insert(int a) {
 		byte* data = new byte[len + 2 + 4];
 		memcpy(data, packet_data, len);
+		delete[] packet_data;
 		packet_data = data;
 		data[len] = index;
 		data[len + 1] = 0x9;
@@ -370,6 +375,7 @@ public:
 	void Insert(unsigned int a) {
 		byte* data = new byte[len + 2 + 4];
 		memcpy(data, packet_data, len);
+		delete[] packet_data;
 		packet_data = data;
 		data[len] = index;
 		data[len + 1] = 0x5;
@@ -381,6 +387,7 @@ public:
 	void Insert(float a) {
 		byte* data = new byte[len + 2 + 4];
 		memcpy(data, packet_data, len);
+		delete[] packet_data;
 		packet_data = data;
 		data[len] = index;
 		data[len + 1] = 0x1;
@@ -392,6 +399,7 @@ public:
 	void Insert(float a, float b) {
 		byte* data = new byte[len + 2 + 8];
 		memcpy(data, packet_data, len);
+		delete[] packet_data;
 		packet_data = data;
 		data[len] = index;
 		data[len + 1] = 0x3;
@@ -404,6 +412,7 @@ public:
 	void Insert(float a, float b, float c) {
 		byte* data = new byte[len + 2 + 12];
 		memcpy(data, packet_data, len);
+		delete[] packet_data;
 		packet_data = data;
 		data[len] = index;
 		data[len + 1] = 0x4;
