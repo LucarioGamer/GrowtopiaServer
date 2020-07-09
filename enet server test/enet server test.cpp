@@ -352,7 +352,7 @@ public:
 	void Insert(string a) {
 		byte* data = new byte[len + 2 + a.length() + 4];
 		memcpy(data, packet_data, len);
-		delete packet_data[];
+		delete[] packet_data;
 		packet_data = data;
 		data[len] = index;
 		data[len + 1] = 0x2;
