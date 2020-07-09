@@ -77,6 +77,7 @@ string newslist = "set_default_color|`o\n\nadd_label_with_icon|big|`wThe Growtop
 #ifdef __linux__
 #include <cstdint>
 typedef unsigned char BYTE;
+typedef unsigned char byte;
 typedef unsigned char __int8;
 typedef unsigned short __int16;
 typedef unsigned int DWORD;
