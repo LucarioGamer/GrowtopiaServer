@@ -36,6 +36,9 @@ char _getch() {
     return getchar();
 }
 #endif
+#ifdef __APPLE__
+#include <sys/uio.h>
+#endif
 #include <vector>
 #include <sstream>
 #include <chrono>
