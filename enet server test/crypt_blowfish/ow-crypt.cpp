@@ -243,7 +243,11 @@ char *__crypt_gensalt_ra(const char *prefix, unsigned long count,
 		input, size, output, sizeof(output));
 
 	if (retval) {
+#ifdef __linux__
+		retval = strdup(retval);
+#else
 		retval = _strdup(retval);
+#endif
 #ifndef __GLIBC__
 		/* strdup(3) on glibc sets errno, so we don't need to bother */
 		if (!retval)
